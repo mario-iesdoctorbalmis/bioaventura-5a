@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f2f6ee">
+  <title>Bioaventura | El cuerpo humano</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="lucide.min.js" defer></script>
+  <script src="data.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#inicio" aria-label="Bioaventura, inicio"><span class="brand-mark"><i data-lucide="sparkles"></i></span><span>bio<span>aventura</span><small>EL CUERPO HUMANO</small></span></a>
+      <div class="header-right"><span class="header-label">MI PROGRESO</span><div class="header-stat"><i data-lucide="star"></i><strong data-score>0</strong><span>pts</span></div><div class="header-level"><span>NIVEL</span><strong data-level>1</strong></div></div>
+    </div>
+  </header>
+
+  <main id="inicio" class="page">
+    <section class="welcome" aria-labelledby="welcome-title">
+      <div class="welcome-copy"><div class="eyebrow"><span></span> TU MISIÓN DE HOY</div><h1 id="welcome-title">Tu cuerpo es<br>una <em>aventura.</em></h1><p>Explora, aprende y demuestra todo lo que sabes. ¡Cada pregunta cuenta!</p><button class="button primary" id="start-random"><i data-lucide="play" fill="currentColor"></i> Empezar aventura <i data-lucide="arrow-right"></i></button><div class="welcome-note"><i data-lucide="sparkles"></i> 5 temas para descubrir</div></div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="art-label art-label-top"><i data-lucide="sparkles"></i> ¡A EXPLORAR!</div>
+        <svg viewBox="0 0 360 330" role="img" aria-label="Personaje explorador del cuerpo humano">
+          <path d="M39 267h284" stroke="#213e39" stroke-width="3" stroke-linecap="round" opacity=".18"/>
+          <path d="M96 98l-29-16m213 4 22-18M74 197l-24 8m250 8 20 9" stroke="#fa795f" stroke-width="4" stroke-linecap="round"/>
+          <path d="m94 70 3-10m-8 5 10 3m183 73 4-11m-9 5 12 3" stroke="#edb83d" stroke-width="4" stroke-linecap="round"/>
+          <path d="M133 207 116 252l-20 12m132-57 17 45 20 12" fill="none" stroke="#25483f" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="m112 253-17 11m151-11 19 11" fill="none" stroke="#f9f8e9" stroke-width="7" stroke-linecap="round"/>
+          <path d="m125 139-37 34-14 40m162-74 37 34 14 40" fill="none" stroke="#25483f" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="m89 172-10 29m194-29 10 29" fill="none" stroke="#f9f8e9" stroke-width="6" stroke-linecap="round"/>
+          <path d="M124 140q56-29 112 0l-7 65q-49 21-98 0z" fill="#ff8067" stroke="#25483f" stroke-width="5"/>
+          <path d="M180 145v58m-35-49q35 22 70 0m-67 13q32 20 64 0m-60 13q28 17 56 0" fill="none" stroke="#fff6d8" stroke-width="7" stroke-linecap="round"/>
+          <path d="M146 118v18q34 20 68 0v-18" fill="#f9f8e9" stroke="#25483f" stroke-width="5"/>
+          <path d="M125 74q0-49 55-49t55 49v24q0 37-28 44h-54q-28-7-28-44z" fill="#fffdf2" stroke="#25483f" stroke-width="5"/>
+          <path d="M130 58q7-36 50-36t50 36" fill="#ffc84d" stroke="#25483f" stroke-width="5"/>
+          <path d="M120 59h120" stroke="#25483f" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="158" cy="86" r="8" fill="#25483f"/><circle cx="202" cy="86" r="8" fill="#25483f"/>
+          <path d="M170 111q10 9 20 0" fill="none" stroke="#25483f" stroke-width="4" stroke-linecap="round"/>
+          <path d="M158 128h44" stroke="#25483f" stroke-width="4" stroke-linecap="round"/>
+          <path d="M172 125v7m16-7v7" stroke="#25483f" stroke-width="3"/>
+          <path d="M257 52l5-12 5 12 12 5-12 5-5 12-5-12-12-5z" fill="#ffc84d"/>
+          <path d="M69 118l4-9 4 9 9 4-9 4-4 9-4-9-9-4z" fill="#fff5cf"/>
+        </svg>
+        <div class="art-label art-label-bottom"><span class="tiny-star">★</span> ¡TÚ PUEDES!</div>
+      </div>
+    </section>
+
+    <section class="progress-strip" aria-label="Tu progreso"><div class="progress-intro"><span class="progress-icon"><i data-lucide="rocket"></i></span><div><span class="overline">TU VIAJE</span><strong>Pequeños pasos, grandes logros</strong></div></div><div class="progress-details"><div class="level-line"><span>Nivel <strong data-level>1</strong></span><span data-next-level>0 / 100 puntos</span></div><div class="progress-track"><span id="level-progress"></span></div></div><div class="completed"><strong data-correct>0</strong><span>respuestas<br>correctas</span></div></section>
+
+    <section class="topics-section" id="temas"><div class="section-heading"><div><div class="eyebrow dark"><span></span> ELIGE TU MISIÓN</div><h2>¿Qué exploramos hoy?</h2><p>Elige un tema y ponte a prueba.</p></div><div class="section-count"><i data-lucide="layers-2"></i> 5 TEMAS</div></div><div class="topic-grid" id="topic-grid"></div></section>
+
+    <section class="badges-section" aria-labelledby="badges-title"><div class="section-heading"><div><div class="eyebrow dark"><span></span> TU COLECCIÓN</div><h2 id="badges-title">Emblemas de explorador</h2><p>Hay logros esperándote en cada aventura.</p></div><div class="badge-count"><strong id="badge-count">0</strong> / 5 CONSEGUIDOS</div></div><div class="badge-grid" id="badge-grid"></div></section>
+    <footer><span><span class="footer-mark">✳</span> Hecho para mentes curiosas.</span><button class="text-button" id="reset-progress"><i data-lucide="rotate-ccw"></i> Reiniciar progreso</button></footer>
+  </main>
+
+  <dialog id="quiz-dialog" class="dialog quiz-dialog" aria-labelledby="quiz-title"><div id="quiz-content"></div></dialog>
+  <dialog id="study-dialog" class="dialog study-dialog" aria-labelledby="study-title"><div class="dialog-header"><div><span class="overline">CUADERNO DE EXPLORACIÓN</span><h2 id="study-title">Tu lámina</h2></div><button class="icon-button" data-close-study aria-label="Cerrar lámina" title="Cerrar"><i data-lucide="x"></i></button></div><p>Observa la lámina original. Puedes ampliar la imagen para verla mejor.</p><div class="study-image-wrap"><img id="study-image" alt="Lámina de estudio original"></div><div class="study-actions"><a id="study-image-link" class="button secondary" target="_blank" rel="noopener"><i data-lucide="external-link"></i> Abrir imagen</a><button class="button primary" id="study-play"><i data-lucide="play" fill="currentColor"></i> Practicar este tema</button></div></dialog>
+  <dialog id="reset-dialog" class="dialog confirm-dialog" aria-labelledby="reset-title"><div class="dialog-header"><h2 id="reset-title">¿Empezar de nuevo?</h2><button class="icon-button" data-cancel-reset aria-label="Cerrar" title="Cerrar"><i data-lucide="x"></i></button></div><p>Se borrarán los puntos, niveles y emblemas guardados en este navegador.</p><div class="study-actions"><button class="button secondary" data-cancel-reset>Cancelar</button><button class="button danger" id="confirm-reset">Sí, reiniciar</button></div></dialog>
+</body>
+</html>
