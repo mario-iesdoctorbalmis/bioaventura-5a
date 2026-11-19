@@ -29,4 +29,5 @@ Ayuda a aprender y repasar contenidos de 5.º de primaria con explicaciones clar
 - Al crear preguntas tipo test o cuestionarios, evita que la respuesta sea obvia:
   - Usa distractores plausibles del mismo tema o categoría (por ejemplo, si preguntas por un hueso, todas las opciones deben ser huesos; si preguntas por una parte del ojo, todas deben ser partes o elementos relacionados con la vista).
   - Evita opciones absurdas o de otros temas que permitan acertar por simple descarte.
+  - Evita pistas léxicas o palabras de la misma familia entre el enunciado y la respuesta correcta (por ejemplo, no preguntes por la "sal" si la respuesta es "salado", ni por el "abdomen" si la respuesta es "abdominales").
   - Plantea preguntas que requieran comprender funciones, ubicaciones, relaciones o procesos (no solo memorizar palabras sueltas) y varía la posición de la respuesta correcta.
