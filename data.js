@@ -100,3 +100,132 @@ const QUESTIONS = [
   { topic: 'gusto', q: '¿Qué papel cumple el cerebro en el sentido del gusto?', options: ['Produce la saliva necesaria para disolver la comida', 'Recibe las señales de las papilas gustativas e interpreta el sabor', 'Mueve la lengua al masticar', 'Almacena los cinco sabores básicos'], answer: 1, explanation: 'Las papilas gustativas envían señales al cerebro, que es el órgano encargado de interpretar los sabores.' },
   { topic: 'gusto', q: '¿Cuál de estas parejas alimento-sabor es correcta?', options: ['Café sin azúcar - dulce', 'Limón - amargo', 'Yogur natural sin azúcar - ácido', 'Azúcar - umami'], answer: 2, explanation: 'El yogur natural sin azúcar tiene un toque ácido; el café sin azúcar es amargo, el limón es ácido y el azúcar es dulce.' }
 ];
+
+const DIAGRAMS = {
+  huesos: {
+    title: 'El esqueleto humano',
+    instruction: 'Arrastra cada hueso a su lugar en el dibujo.',
+    viewBox: '0 0 360 380',
+    svg: `
+      <g fill="#f7efe2" stroke="#25483f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="180" cy="46" r="26"/>
+        <path d="M168 70v18h24V70"/>
+        <path d="M132 94h96"/>
+        <path d="M180 88v110"/>
+        <path d="M148 106q32 10 64 0M144 122q36 12 72 0M146 138q34 12 68 0M152 154q28 10 56 0"/>
+        <path d="M148 196q32 22 64 0l-6 26q-26 10-52 0z"/>
+        <path d="M132 94l-26 62-14 54"/>
+        <path d="M228 94l26 62 14 54"/>
+        <path d="M160 222l-10 66-6 66"/>
+        <path d="M200 222l10 66 6 66"/>
+        <circle cx="150" cy="288" r="7" fill="#ffd97d"/>
+        <circle cx="210" cy="288" r="7" fill="#ffd97d"/>
+      </g>
+    `,
+    zones: [
+      { id: 'craneo', label: 'Cráneo (Frontal)', x: 50, y: 12 },
+      { id: 'clavicula', label: 'Clavícula', x: 64, y: 24 },
+      { id: 'costillas', label: 'Costillas', x: 50, y: 35 },
+      { id: 'humero', label: 'Húmero', x: 28, y: 33 },
+      { id: 'pelvis', label: 'Pelvis', x: 50, y: 54 },
+      { id: 'femur', label: 'Fémur', x: 40, y: 68 },
+      { id: 'rotula', label: 'Rótula', x: 58, y: 76 },
+      { id: 'tibia', label: 'Tibia', x: 40, y: 88 }
+    ]
+  },
+  musculos: {
+    title: 'Los músculos del cuerpo',
+    instruction: 'Arrastra cada músculo a su zona correspondiente.',
+    viewBox: '0 0 360 380',
+    svg: `
+      <g fill="#f6a08b" stroke="#25483f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="180" cy="44" r="24" fill="#fde4d8"/>
+        <path d="M168 68l12 18 12-18" fill="#f6a08b"/>
+        <path d="M130 92q50-10 100 0l-10 104q-40 16-80 0z"/>
+        <path d="M142 104q18 18 36 0M182 104q18 18 36 0" fill="none"/>
+        <path d="M160 136h40M160 154h40M162 172h36" fill="none"/>
+        <path d="M130 92l-26 58-12 52h16l14-48 12-40"/>
+        <path d="M230 92l26 58 12 52h-16l-14-48-12-40"/>
+        <path d="M146 202l-10 76-4 72h20l8-72 14-70"/>
+        <path d="M214 202l10 76 4 72h-20l-8-72-14-70"/>
+      </g>
+    `,
+    zones: [
+      { id: 'deltoides', label: 'Deltoides', x: 32, y: 26 },
+      { id: 'pectoral', label: 'Pectoral', x: 58, y: 29 },
+      { id: 'biceps', label: 'Bíceps', x: 26, y: 39 },
+      { id: 'abdominales', label: 'Abdominales', x: 50, y: 43 },
+      { id: 'cuadriceps', label: 'Cuádriceps', x: 41, y: 64 },
+      { id: 'gemelo', label: 'Gemelo', x: 61, y: 82 }
+    ]
+  },
+  oido: {
+    title: 'Partes del oído',
+    instruction: 'Arrastra cada parte del oído a su lugar en el esquema.',
+    viewBox: '0 0 380 240',
+    svg: `
+      <g fill="none" stroke="#25483f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M58 64c-26 0-36 30-28 60 6 24 22 44 40 42 12-1 18-14 14-28-3-10-12-14-12-26 0-16 14-24 14-36 0-8-12-12-28-12z" fill="#fbd7c4"/>
+        <path d="M84 106h96M84 126h96" fill="#fdebe0"/>
+        <ellipse cx="184" cy="116" rx="8" ry="20" fill="#ffd97d"/>
+        <path d="M192 110l20-12 18 14 20-6" stroke-width="4"/>
+        <path d="M254 114c0-22 28-26 36-8 6 14-4 32-20 32-12 0-18-10-14-20 3-8 12-8 14-2" fill="#cde8f6"/>
+        <path d="M292 104l48-16M292 118l48 10" stroke="#4f83cc" stroke-width="4"/>
+      </g>
+    `,
+    zones: [
+      { id: 'oreja', label: 'Oreja', x: 14, y: 48 },
+      { id: 'conducto', label: 'Conducto auditivo', x: 34, y: 48 },
+      { id: 'timpano', label: 'Tímpano', x: 48, y: 48 },
+      { id: 'huesecillos', label: 'Huesecillos', x: 58, y: 40 },
+      { id: 'caracol', label: 'Caracol', x: 72, y: 48 },
+      { id: 'nervio', label: 'Nervio auditivo', x: 87, y: 46 }
+    ]
+  },
+  vista: {
+    title: 'Partes del ojo',
+    instruction: 'Arrastra cada parte del ojo a su lugar correcto.',
+    viewBox: '0 0 380 240',
+    svg: `
+      <g stroke="#25483f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M70 52q120-26 240 0" fill="none" stroke-width="8"/>
+        <path d="M110 88l-8-14M145 78l-4-16M190 74v-16M235 78l4-16M270 88l8-14" fill="none"/>
+        <path d="M70 128q120-70 240 0q-120 70-240 0z" fill="#ffffff"/>
+        <circle cx="190" cy="128" r="44" fill="#63b38b"/>
+        <circle cx="190" cy="128" r="20" fill="#18322c"/>
+        <circle cx="182" cy="120" r="6" fill="#ffffff" stroke="none"/>
+      </g>
+    `,
+    zones: [
+      { id: 'ceja', label: 'Ceja', x: 50, y: 18 },
+      { id: 'pestanas', label: 'Pestañas', x: 38, y: 31 },
+      { id: 'esclerotica', label: 'Esclerótica', x: 29, y: 54 },
+      { id: 'iris', label: 'Iris', x: 58, y: 54 },
+      { id: 'pupila', label: 'Pupila', x: 50, y: 53 },
+      { id: 'parpado', label: 'Párpado', x: 50, y: 74 }
+    ]
+  },
+  gusto: {
+    title: 'El sentido del gusto',
+    instruction: 'Arrastra cada elemento a su lugar en la lengua y los sabores.',
+    viewBox: '0 0 380 240',
+    svg: `
+      <g stroke="#25483f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M120 40c0 95 25 160 70 160s70-65 70-160z" fill="#f79ca8"/>
+        <path d="M190 45v120" fill="none" opacity=".35"/>
+        <circle cx="155" cy="85" r="7" fill="#fff3b0"/>
+        <circle cx="225" cy="85" r="7" fill="#fff3b0"/>
+        <circle cx="150" cy="130" r="7" fill="#b8e0d2"/>
+        <circle cx="230" cy="130" r="7" fill="#b8e0d2"/>
+        <circle cx="190" cy="165" r="8" fill="#ffd6a5"/>
+      </g>
+    `,
+    zones: [
+      { id: 'amargo', label: 'Amargo (fondo)', x: 50, y: 26 },
+      { id: 'acido', label: 'Ácido (lados)', x: 39, y: 54 },
+      { id: 'papilas', label: 'Papilas gustativas', x: 60, y: 35 },
+      { id: 'salado', label: 'Salado (lados/delante)', x: 61, y: 54 },
+      { id: 'dulce', label: 'Dulce (punta)', x: 50, y: 70 }
+    ]
+  }
+};

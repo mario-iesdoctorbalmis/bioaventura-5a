@@ -15,8 +15,11 @@ let studyTopic = null;
 
 const quizDialog = document.querySelector('#quiz-dialog');
 const quizContent = document.querySelector('#quiz-content');
+const diagramDialog = document.querySelector('#diagram-dialog');
+const diagramContent = document.querySelector('#diagram-content');
 const studyDialog = document.querySelector('#study-dialog');
 const resetDialog = document.querySelector('#reset-dialog');
+let diagramState = null;
 
 function loadState() {
   try {
@@ -65,7 +68,7 @@ function renderDashboard() {
 }
 
 function renderTopics() {
-  document.querySelector('#topic-grid').innerHTML = TOPICS.map((topic, index) => `<article class="topic-card"><div class="topic-visual ${topic.color}"><span class="topic-number">0${index + 1}</span><i data-lucide="${topic.icon}"></i></div><h3>${topic.name}</h3><p>${topic.description}</p><div class="topic-actions"><button class="button topic-play" data-play="${topic.id}"><i data-lucide="play" fill="currentColor"></i> Jugar</button><button class="icon-button" data-study="${topic.id}" aria-label="Ver lámina de ${topic.name}" title="Ver lámina"><i data-lucide="book-open"></i></button></div></article>`).join('');
+  document.querySelector('#topic-grid').innerHTML = TOPICS.map((topic, index) => `<article class="topic-card"><div class="topic-visual ${topic.color}"><span class="topic-number">0${index + 1}</span><i data-lucide="${topic.icon}"></i></div><h3>${topic.name}</h3><p>${topic.description}</p><div class="topic-actions"><button class="button topic-play" data-play="${topic.id}"><i data-lucide="play" fill="currentColor"></i> Jugar</button><button class="icon-button" data-diagram="${topic.id}" aria-label="Etiquetar dibujo de ${topic.name}" title="Etiquetar dibujo"><i data-lucide="move"></i></button><button class="icon-button" data-study="${topic.id}" aria-label="Ver lámina de ${topic.name}" title="Ver lámina"><i data-lucide="book-open"></i></button></div></article>`).join('');
   icons();
 }
 
@@ -126,8 +129,10 @@ function finishRound() {
 
 document.querySelector('#topic-grid').addEventListener('click', event => {
   const play = event.target.closest('[data-play]');
+  const diagram = event.target.closest('[data-diagram]');
   const study = event.target.closest('[data-study]');
   if (play) startRound(play.dataset.play);
+  if (diagram) startDiagram(diagram.dataset.diagram);
   if (study) {
     studyTopic = TOPICS.find(topic => topic.id === study.dataset.study);
     document.querySelector('#study-title').textContent = studyTopic.name;
@@ -160,3 +165,126 @@ document.querySelector('#confirm-reset').addEventListener('click', () => { state
 
 renderTopics();
 renderDashboard();
+
+function startDiagram(topicId) {
+  const data = DIAGRAMS[topicId];
+  const topic = TOPICS.find(item => item.id === topicId);
+  if (!data || !topic) return;
+  diagramState = { topicId, placed: new Set(), selectedLabel: null, total: data.zones.length };
+  const shuffledLabels = shuffle(data.zones);
+  diagramContent.innerHTML = `
+    <div class="quiz-top">
+      <div class="quiz-topic"><span class="quiz-topic-icon ${topic.color}"><i data-lucide="${topic.icon}"></i></span><span>${data.title}</span></div>
+      <div class="quiz-meta"><span id="diagram-count">0 / ${data.zones.length}</span><button class="icon-button" data-close-diagram aria-label="Cerrar" title="Cerrar"><i data-lucide="x"></i></button></div>
+    </div>
+    <p class="diagram-instruction">${data.instruction} <small>(También puedes pulsar una etiqueta y luego su círculo).</small></p>
+    <div class="diagram-layout">
+      <div class="diagram-stage">
+        <svg viewBox="${data.viewBox}" role="img" aria-label="${data.title}">${data.svg}</svg>
+        ${data.zones.map((zone, i) => `<button type="button" class="drop-zone" data-zone="${zone.id}" style="left:${zone.x}%;top:${zone.y}%" aria-label="Zona ${i + 1}">${i + 1}</button>`).join('')}
+      </div>
+      <div class="label-bank" id="label-bank">
+        ${shuffledLabels.map(zone => `<button type="button" class="drag-label" draggable="true" data-label="${zone.id}">${zone.label}</button>`).join('')}
+      </div>
+    </div>
+    <div id="diagram-feedback" class="diagram-feedback" aria-live="polite"></div>
+  `;
+  icons();
+  if (!diagramDialog.open) diagramDialog.showModal();
+}
+
+function tryPlaceLabel(zoneId, labelId) {
+  if (!diagramState || diagramState.placed.has(zoneId)) return;
+  const zoneEl = diagramContent.querySelector(`[data-zone="${zoneId}"]`);
+  const labelEl = diagramContent.querySelector(`[data-label="${labelId}"]`);
+  const feedback = diagramContent.querySelector('#diagram-feedback');
+  if (!zoneEl || !labelEl) return;
+
+  if (zoneId === labelId) {
+    diagramState.placed.add(zoneId);
+    zoneEl.classList.add('filled');
+    zoneEl.textContent = labelEl.textContent;
+    labelEl.disabled = true;
+    labelEl.classList.add('used');
+    diagramState.selectedLabel = null;
+    diagramContent.querySelectorAll('.drag-label.selected').forEach(el => el.classList.remove('selected'));
+    state.score += 5;
+    updateBadges();
+    saveState();
+    renderDashboard();
+    diagramContent.querySelector('#diagram-count').textContent = `${diagramState.placed.size} / ${diagramState.total}`;
+    if (diagramState.placed.size === diagramState.total) {
+      feedback.className = 'diagram-feedback ok';
+      feedback.textContent = '¡Genial! Has colocado todas las etiquetas en su sitio (+5 pts por cada una).';
+    } else {
+      feedback.className = 'diagram-feedback ok';
+      feedback.textContent = '¡Correcto! +5 puntos.';
+    }
+  } else {
+    zoneEl.classList.add('wrong-drop');
+    setTimeout(() => zoneEl.classList.remove('wrong-drop'), 500);
+    feedback.className = 'diagram-feedback err';
+    feedback.textContent = 'Ese no es su sitio. ¡Prueba en otro punto del dibujo!';
+  }
+}
+
+diagramContent.addEventListener('click', event => {
+  if (event.target.closest('[data-close-diagram]')) {
+    diagramDialog.close();
+    return;
+  }
+  const labelBtn = event.target.closest('[data-label]');
+  if (labelBtn && !labelBtn.disabled) {
+    diagramContent.querySelectorAll('.drag-label.selected').forEach(el => el.classList.remove('selected'));
+    if (diagramState.selectedLabel === labelBtn.dataset.label) {
+      diagramState.selectedLabel = null;
+    } else {
+      diagramState.selectedLabel = labelBtn.dataset.label;
+      labelBtn.classList.add('selected');
+    }
+    return;
+  }
+  const zoneBtn = event.target.closest('[data-zone]');
+  if (zoneBtn && diagramState?.selectedLabel) {
+    tryPlaceLabel(zoneBtn.dataset.zone, diagramState.selectedLabel);
+  }
+});
+
+diagramContent.addEventListener('dragstart', event => {
+  const labelBtn = event.target.closest('[data-label]');
+  if (!labelBtn || labelBtn.disabled) return;
+  event.dataTransfer.setData('text/plain', labelBtn.dataset.label);
+  diagramState.selectedLabel = labelBtn.dataset.label;
+});
+
+diagramContent.addEventListener('dragover', event => {
+  const zoneBtn = event.target.closest('[data-zone]');
+  if (zoneBtn && !zoneBtn.classList.contains('filled')) {
+    event.preventDefault();
+    zoneBtn.classList.add('drag-over');
+  }
+});
+
+diagramContent.addEventListener('dragleave', event => {
+  const zoneBtn = event.target.closest('[data-zone]');
+  if (zoneBtn) zoneBtn.classList.remove('drag-over');
+});
+
+diagramContent.addEventListener('drop', event => {
+  const zoneBtn = event.target.closest('[data-zone]');
+  if (!zoneBtn) return;
+  event.preventDefault();
+  zoneBtn.classList.remove('drag-over');
+  const labelId = event.dataTransfer.getData('text/plain') || diagramState?.selectedLabel;
+  if (labelId) tryPlaceLabel(zoneBtn.dataset.zone, labelId);
+});
+
+document.addEventListener('keydown', event => {
+  if (!quizDialog.open || !round || round.answered) return;
+  const keyMap = { a: 0, b: 1, c: 2, d: 3 };
+  const index = keyMap[event.key.toLowerCase()];
+  if (index !== undefined) {
+    event.preventDefault();
+    answerQuestion(index);
+  }
+});
