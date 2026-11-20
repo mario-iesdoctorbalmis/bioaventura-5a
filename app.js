@@ -1,7 +1,7 @@
 const STORAGE_KEY = 'bioaventura-progress-v1';
 const LEADERBOARD_KEY = 'bioaventura-leaderboard-v1';
 // Pega aquí la URL de tu Google Apps Script publicada como Aplicación web:
-const SHEETS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbykZ4i6HRc4uRVrYjjauYfgBV7bpZOpDWHnyrT75M6e3yPzilovffWyJYRt2cVN-4fv/exec';
+const SHEETS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbx7h_xT0fHbnq6Von21MfYG6pYEO8g_2dTkDDYsK-d5DqIwDjJ74IgI2_dx6Ll4jbZFzA/exec';
 const ROUND_SIZE = 5;
 const BADGES = [
   { id: 'first', name: 'Primer paso', detail: 'Completa tu primera misión', icon: 'flag', earned: state => state.games >= 1 },
@@ -11,7 +11,7 @@ const BADGES = [
   { id: 'expert', name: 'Gran experto', detail: 'Acierta 50 preguntas', icon: 'trophy', earned: state => state.correct >= 50 }
 ];
 
-const defaultState = () => ({ playerName: '', score: 0, correct: 0, games: 0, perfect: 0, topics: [], badges: [] });
+const defaultState = () => ({ playerName: '', playerPass: '', score: 0, correct: 0, games: 0, perfect: 0, topics: [], badges: [] });
 let state = loadState();
 let round = null;
 let studyTopic = null;
@@ -23,6 +23,7 @@ const diagramContent = document.querySelector('#diagram-content');
 const studyDialog = document.querySelector('#study-dialog');
 const resetDialog = document.querySelector('#reset-dialog');
 const playerDialog = document.querySelector('#player-dialog');
+const loadingDialog = document.querySelector('#loading-dialog');
 let diagramState = null;
 
 function loadState() {
@@ -30,7 +31,7 @@ function loadState() {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (!saved || typeof saved !== 'object') return defaultState();
     const number = value => Number.isFinite(value) && value >= 0 ? Math.floor(value) : 0;
-    return { playerName: typeof saved.playerName === 'string' ? saved.playerName : '', score: number(saved.score), correct: number(saved.correct), games: number(saved.games), perfect: number(saved.perfect), topics: Array.isArray(saved.topics) ? saved.topics.filter(id => TOPICS.some(topic => topic.id === id)) : [], badges: Array.isArray(saved.badges) ? saved.badges.filter(id => BADGES.some(badge => badge.id === id)) : [] };
+    return { playerName: typeof saved.playerName === 'string' ? saved.playerName : '', playerPass: typeof saved.playerPass === 'string' ? saved.playerPass : '', score: number(saved.score), correct: number(saved.correct), games: number(saved.games), perfect: number(saved.perfect), topics: Array.isArray(saved.topics) ? saved.topics.filter(id => TOPICS.some(topic => topic.id === id)) : [], badges: Array.isArray(saved.badges) ? saved.badges.filter(id => BADGES.some(badge => badge.id === id)) : [] };
   } catch {
     return defaultState();
   }
@@ -327,6 +328,7 @@ async function syncScoreToSheet() {
   if (!state.playerName) return;
   const entry = {
     nombre: state.playerName,
+    clave: state.playerPass || '',
     puntos: state.score,
     aciertos: state.correct,
     partidas: state.games,
@@ -349,6 +351,7 @@ async function loadLeaderboard() {
   const local = getLocalLeaderboard();
   renderLeaderboard(local);
   if (!SHEETS_WEBAPP_URL) return;
+  if (!loadingDialog.open) loadingDialog.showModal();
   try {
     const res = await fetch(SHEETS_WEBAPP_URL);
     if (res.ok) {
@@ -368,7 +371,9 @@ async function loadLeaderboard() {
         }
       }
     }
-  } catch {}
+  } catch {} finally {
+    if (loadingDialog.open) loadingDialog.close();
+  }
 }
 
 function renderLeaderboard(rows) {
@@ -383,17 +388,50 @@ function renderLeaderboard(rows) {
 
 document.querySelector('#change-player').addEventListener('click', () => {
   document.querySelector('#player-input').value = state.playerName || '';
+  document.querySelector('#player-pass').value = state.playerPass || '';
+  document.querySelector('#player-error').textContent = '';
   playerDialog.showModal();
 });
 document.querySelector('[data-close-player]').addEventListener('click', () => playerDialog.close());
-document.querySelector('#player-form').addEventListener('submit', event => {
+document.querySelector('#player-form').addEventListener('submit', async event => {
   event.preventDefault();
   const name = document.querySelector('#player-input').value.trim();
-  if (!name) return;
+  const pass = document.querySelector('#player-pass').value;
+  const errorEl = document.querySelector('#player-error');
+  if (!name || !pass) return;
+  errorEl.textContent = '';
+
+  if (SHEETS_WEBAPP_URL) {
+    if (!loadingDialog.open) loadingDialog.showModal();
+    try {
+      const url = `${SHEETS_WEBAPP_URL}?nombre=${encodeURIComponent(name)}&clave=${encodeURIComponent(pass)}`;
+      const res = await fetch(url);
+      if (res.ok) {
+        const check = await res.json();
+        if (check.status === 'wrong_password') {
+          errorEl.textContent = 'Contraseña incorrecta para este usuario.';
+          return;
+        }
+        if (check.status === 'ok') {
+          state = { ...defaultState(), playerName: name, playerPass: pass, score: check.puntos || 0, correct: check.aciertos || 0, games: check.partidas || 0 };
+          updateBadges();
+          saveState();
+          renderDashboard();
+          loadLeaderboard();
+          playerDialog.close();
+          return;
+        }
+      }
+    } catch {} finally {
+      if (loadingDialog.open) loadingDialog.close();
+    }
+  }
+
   if (name.toLowerCase() !== (state.playerName || '').toLowerCase()) {
-    state = { ...defaultState(), playerName: name };
+    state = { ...defaultState(), playerName: name, playerPass: pass };
   } else {
     state.playerName = name;
+    state.playerPass = pass;
   }
   saveState();
   renderDashboard();
