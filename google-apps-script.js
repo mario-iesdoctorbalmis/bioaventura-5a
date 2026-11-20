@@ -18,7 +18,8 @@ function doGet(e) {
           status: 'ok',
           puntos: Number(rows[i][1]) || 0,
           aciertos: Number(rows[i][2]) || 0,
-          partidas: Number(rows[i][3]) || 0
+          partidas: Number(rows[i][3]) || 0,
+          progreso: rows[i][6] || ''
         })).setMimeType(ContentService.MimeType.JSON);
       }
     }
@@ -46,6 +47,7 @@ function doPost(e) {
   const puntos = Number(body.puntos) || 0;
   const aciertos = Number(body.aciertos) || 0;
   const partidas = Number(body.partidas) || 0;
+  const progreso = String(body.progreso || '');
   const fecha = new Date().toLocaleDateString('es-ES');
 
   const rows = sheet.getDataRange().getValues();
@@ -58,11 +60,11 @@ function doPost(e) {
       const bestPuntos = Math.max(Number(rows[i][1]) || 0, puntos);
       const bestAciertos = Math.max(Number(rows[i][2]) || 0, aciertos);
       const totalPartidas = Math.max(Number(rows[i][3]) || 0, partidas);
-      sheet.getRange(i + 1, 2, 1, 5).setValues([[bestPuntos, bestAciertos, totalPartidas, fecha, savedPass || clave]]);
+      sheet.getRange(i + 1, 2, 1, 6).setValues([[bestPuntos, bestAciertos, totalPartidas, fecha, savedPass || clave, progreso || rows[i][6] || '']]);
       return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
     }
   }
 
-  sheet.appendRow([nombre, puntos, aciertos, partidas, fecha, clave]);
+  sheet.appendRow([nombre, puntos, aciertos, partidas, fecha, clave, progreso]);
   return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
 }

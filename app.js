@@ -1,17 +1,26 @@
 const STORAGE_KEY = 'bioaventura-progress-v1';
 const LEADERBOARD_KEY = 'bioaventura-leaderboard-v1';
 // Pega aquí la URL de tu Google Apps Script publicada como Aplicación web:
-const SHEETS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbx7h_xT0fHbnq6Von21MfYG6pYEO8g_2dTkDDYsK-d5DqIwDjJ74IgI2_dx6Ll4jbZFzA/exec';
+const SHEETS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbywzkiEmQpPj_jKsblRG3nzbr2bmht6Zn4avjSEIRQh0OEG5TuYp4J5XPW4TEJdap2XuQ/exec';
 const ROUND_SIZE = 5;
 const BADGES = [
   { id: 'first', name: 'Primer paso', detail: 'Completa tu primera misión', icon: 'flag', earned: state => state.games >= 1 },
   { id: 'correct', name: 'Mente curiosa', detail: 'Acierta 10 preguntas', icon: 'lightbulb', earned: state => state.correct >= 10 },
   { id: 'explorer', name: 'Explorador', detail: 'Completa 3 temas distintos', icon: 'compass', earned: state => state.topics.length >= 3 },
   { id: 'perfect', name: '¡Impecable!', detail: 'Completa una misión sin fallos', icon: 'medal', earned: state => state.perfect >= 1 },
-  { id: 'expert', name: 'Gran experto', detail: 'Acierta 50 preguntas', icon: 'trophy', earned: state => state.correct >= 50 }
+  { id: 'expert', name: 'Gran experto', detail: 'Acierta 50 preguntas', icon: 'trophy', earned: state => state.correct >= 50 },
+  { id: 'streak3', name: 'En racha', detail: 'Juega 3 días seguidos', icon: 'flame', earned: state => state.streak >= 3 },
+  { id: 'streak7', name: 'Constancia total', detail: 'Juega 7 días seguidos', icon: 'calendar-check', earned: state => state.streak >= 7 },
+  { id: 'anatomist', name: 'Anatomista', detail: 'Completa 3 dibujos interactivos', icon: 'move', earned: state => state.diagrams >= 3 },
+  { id: 'master5', name: 'Maestro de los 5 temas', detail: 'Completa los 5 temas', icon: 'award', earned: state => state.topics.length >= 5 },
+  { id: 'century', name: 'Centenario', detail: 'Acierta 100 preguntas', icon: 'crown', earned: state => state.correct >= 100 },
+  { id: 'perfect3', name: 'Perfeccionista', detail: 'Completa 3 misiones sin fallos', icon: 'check-circle', earned: state => state.perfect >= 3 },
+  { id: 'fast', name: 'Velocista', detail: 'Completa una misión en menos de 30 s', icon: 'zap', earned: state => state.fastGame },
+  { id: 'early', name: 'Madrugador', detail: 'Juega antes de las 9:00', icon: 'sunrise', earned: state => state.earlyBird },
+  { id: 'top3', name: 'Podio', detail: 'Entra en el Top 3 de la tabla', icon: 'star', earned: state => state.top3 }
 ];
 
-const defaultState = () => ({ playerName: '', playerPass: '', score: 0, correct: 0, games: 0, perfect: 0, topics: [], badges: [] });
+const defaultState = () => ({ playerName: '', playerPass: '', score: 0, correct: 0, games: 0, perfect: 0, streak: 0, lastDay: '', diagrams: 0, fastGame: false, earlyBird: false, top3: false, topics: [], badges: [] });
 let state = loadState();
 let round = null;
 let studyTopic = null;
@@ -31,7 +40,7 @@ function loadState() {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (!saved || typeof saved !== 'object') return defaultState();
     const number = value => Number.isFinite(value) && value >= 0 ? Math.floor(value) : 0;
-    return { playerName: typeof saved.playerName === 'string' ? saved.playerName : '', playerPass: typeof saved.playerPass === 'string' ? saved.playerPass : '', score: number(saved.score), correct: number(saved.correct), games: number(saved.games), perfect: number(saved.perfect), topics: Array.isArray(saved.topics) ? saved.topics.filter(id => TOPICS.some(topic => topic.id === id)) : [], badges: Array.isArray(saved.badges) ? saved.badges.filter(id => BADGES.some(badge => badge.id === id)) : [] };
+    return { playerName: typeof saved.playerName === 'string' ? saved.playerName : '', playerPass: typeof saved.playerPass === 'string' ? saved.playerPass : '', score: number(saved.score), correct: number(saved.correct), games: number(saved.games), perfect: number(saved.perfect), streak: number(saved.streak), lastDay: typeof saved.lastDay === 'string' ? saved.lastDay : '', diagrams: number(saved.diagrams), fastGame: Boolean(saved.fastGame), earlyBird: Boolean(saved.earlyBird), top3: Boolean(saved.top3), topics: Array.isArray(saved.topics) ? saved.topics.filter(id => TOPICS.some(topic => topic.id === id)) : [], badges: Array.isArray(saved.badges) ? saved.badges.filter(id => BADGES.some(badge => badge.id === id)) : [] };
   } catch {
     return defaultState();
   }
@@ -54,20 +63,43 @@ function shuffle(items) {
   return result;
 }
 
+function updateStreak() {
+  const now = new Date();
+  if (now.getHours() < 9) state.earlyBird = true;
+  const today = now.toISOString().slice(0, 10);
+  if (state.lastDay === today) return;
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  state.streak = state.lastDay === yesterday ? (state.streak || 0) + 1 : 1;
+  state.lastDay = today;
+}
+
 function updateBadges() {
+  updateStreak();
   for (const badge of BADGES) {
     if (!state.badges.includes(badge.id) && badge.earned(state)) state.badges.push(badge.id);
   }
 }
 
+function getLevelInfo(score) {
+  let level = 1;
+  let needed = 100;
+  let remaining = score;
+  while (remaining >= needed) {
+    remaining -= needed;
+    level++;
+    needed = Math.round(needed * 1.3);
+  }
+  return { level, current: remaining, needed, percent: Math.min(100, Math.round((remaining / needed) * 100)) };
+}
+
 function renderDashboard() {
   document.querySelectorAll('[data-player-name]').forEach(el => el.textContent = state.playerName || 'Jugador');
   document.querySelectorAll('[data-score]').forEach(element => element.textContent = state.score);
-  const level = Math.floor(state.score / 100) + 1;
+  const { level, current, needed, percent } = getLevelInfo(state.score);
   document.querySelectorAll('[data-level]').forEach(element => element.textContent = level);
   document.querySelector('[data-correct]').textContent = state.correct;
-  document.querySelector('[data-next-level]').textContent = `${state.score % 100} / 100 puntos`;
-  document.querySelector('#level-progress').style.width = `${state.score % 100}%`;
+  document.querySelector('[data-next-level]').textContent = `${current} / ${needed} puntos`;
+  document.querySelector('#level-progress').style.width = `${percent}%`;
   document.querySelector('#badge-count').textContent = state.badges.length;
   document.querySelector('#badge-grid').innerHTML = BADGES.map(badge => `<div class="badge-card ${state.badges.includes(badge.id) ? 'unlocked' : ''}"><span class="badge-symbol"><i data-lucide="${badge.icon}"></i></span><div><strong>${badge.name}</strong><small>${state.badges.includes(badge.id) ? '¡Conseguido!' : badge.detail}</small></div></div>`).join('');
   icons();
@@ -81,7 +113,7 @@ function renderTopics() {
 function startRound(topicId) {
   const pool = topicId ? QUESTIONS.filter(question => question.topic === topicId) : QUESTIONS;
   const questions = shuffle(pool).slice(0, ROUND_SIZE).map(question => ({ ...question, shuffledOptions: shuffle(question.options.map((text, index) => ({ text, correct: index === question.answer }))) }));
-  round = { topicId, questions, index: 0, correct: 0, points: 0, answered: false };
+  round = { topicId, questions, index: 0, correct: 0, points: 0, answered: false, startedAt: Date.now() };
   renderQuestion();
   if (!quizDialog.open) quizDialog.showModal();
 }
@@ -122,6 +154,7 @@ function answerQuestion(index) {
 
 function finishRound() {
   state.games++;
+  if (round.startedAt && Date.now() - round.startedAt < 30000) state.fastGame = true;
   if (round.correct === round.questions.length) state.perfect++;
   if (round.topicId && !state.topics.includes(round.topicId)) state.topics.push(round.topicId);
   const previousBadges = [...state.badges];
@@ -222,6 +255,10 @@ function tryPlaceLabel(zoneId, labelId) {
     syncScoreToSheet();
     diagramContent.querySelector('#diagram-count').textContent = `${diagramState.placed.size} / ${diagramState.total}`;
     if (diagramState.placed.size === diagramState.total) {
+      state.diagrams = (state.diagrams || 0) + 1;
+      updateBadges();
+      saveState();
+      renderDashboard();
       feedback.className = 'diagram-feedback ok';
       feedback.textContent = '¡Genial! Has colocado todas las etiquetas en su sitio (+5 pts por cada una).';
     } else {
@@ -332,6 +369,17 @@ async function syncScoreToSheet() {
     puntos: state.score,
     aciertos: state.correct,
     partidas: state.games,
+    progreso: JSON.stringify({
+      perfect: state.perfect,
+      streak: state.streak,
+      lastDay: state.lastDay,
+      diagrams: state.diagrams,
+      fastGame: state.fastGame,
+      earlyBird: state.earlyBird,
+      top3: state.top3,
+      topics: state.topics,
+      badges: state.badges
+    }),
     fecha: new Date().toLocaleDateString('es-ES')
   };
   saveLocalLeaderboard(entry);
@@ -368,6 +416,9 @@ async function loadLeaderboard() {
 function renderLeaderboard(rows) {
   const container = document.querySelector('#leaderboard-list');
   if (!container) return;
+  if (state.playerName && rows.slice(0, 3).some(r => String(r.nombre || '').toLowerCase() === state.playerName.toLowerCase())) {
+    if (!state.top3) { state.top3 = true; updateBadges(); saveState(); renderDashboard(); }
+  }
   if (!rows.length) {
     container.innerHTML = '<p class="leaderboard-empty">Todavía no hay puntuaciones guardadas. ¡Completa una misión para aparecer aquí!</p>';
     return;
@@ -402,7 +453,25 @@ document.querySelector('#player-form').addEventListener('submit', async event =>
           return;
         }
         if (check.status === 'ok') {
-          state = { ...defaultState(), playerName: name, playerPass: pass, score: check.puntos || 0, correct: check.aciertos || 0, games: check.partidas || 0 };
+          let extra = {};
+          try { if (check.progreso) extra = JSON.parse(check.progreso) || {}; } catch {}
+          state = {
+            ...defaultState(),
+            playerName: name,
+            playerPass: pass,
+            score: check.puntos || 0,
+            correct: check.aciertos || 0,
+            games: check.partidas || 0,
+            perfect: Number(extra.perfect) || 0,
+            streak: Number(extra.streak) || 0,
+            lastDay: typeof extra.lastDay === 'string' ? extra.lastDay : '',
+            diagrams: Number(extra.diagrams) || 0,
+            fastGame: Boolean(extra.fastGame),
+            earlyBird: Boolean(extra.earlyBird),
+            top3: Boolean(extra.top3),
+            topics: Array.isArray(extra.topics) ? extra.topics : [],
+            badges: Array.isArray(extra.badges) ? extra.badges : []
+          };
           updateBadges();
           saveState();
           renderDashboard();
