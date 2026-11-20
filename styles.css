@@ -11,11 +11,15 @@
 
 
 /* Diagrama interactivo (arrastrar y soltar) */
-.diagram-dialog { width: min(1200px, 96vw); max-width: 96vw; min-height: 86vh; }
+.diagram-dialog, .study-dialog { width: min(1320px, 98vw); max-width: 98vw; min-height: 90vh; }
 .diagram-instruction { margin: 8px 0 14px; color: var(--muted, #4e645e); font-size: .95rem; }
-.diagram-layout { display: grid; grid-template-columns: 1.6fr 1fr; gap: 22px; align-items: start; }
+.diagram-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 22px; align-items: start; }
 .diagram-stage { position: relative; background: #fbfdf9; border: 2px solid #d9e5dc; border-radius: 18px; padding: 14px; overflow: hidden; }
-.diagram-stage svg, .diagram-stage img { width: 100%; max-height: 68vh; height: auto; display: block; border-radius: 12px; }
+.diagram-stage svg.diagram-svg, .diagram-stage img { width: 100%; max-height: 80vh; height: auto; display: block; border-radius: 12px; object-fit: contain; }
+.leader-lines { position: absolute; inset: 14px; width: calc(100% - 28px); height: calc(100% - 28px); pointer-events: none; z-index: 1; }
+.leader-lines line { stroke: #25483f; stroke-width: 0.35; stroke-opacity: 0.75; }
+.leader-lines circle { fill: #fa795f; stroke: #ffffff; stroke-width: 0.25; }
+.drop-zone { z-index: 2; }
 .drop-zone { position: absolute; transform: translate(-50%, -50%); min-width: 28px; height: 28px; padding: 0 8px; border-radius: 999px; border: 2px dashed #25483f; background: rgba(255, 255, 255, .92); color: #25483f; font: 700 .78rem/1 'Nunito', sans-serif; cursor: pointer; transition: transform .15s, background .15s, border-color .15s; box-shadow: 0 2px 6px rgba(0,0,0,.1); }
 .drop-zone.drag-over { transform: translate(-50%, -50%) scale(1.15); background: #fff3c4; border-style: solid; }
 .drop-zone.filled { border-style: solid; border-color: #2f8f5b; background: #dff5e8; color: #195936; white-space: nowrap; font-size: .75rem; }
@@ -55,3 +59,6 @@
 .hero-art { max-width: 175px; padding: 6px; }
 .hero-art svg { max-height: 145px; width: auto; }
 .art-label { font-size: .62rem; padding: 3px 7px; }
+
+.study-stage { width: 100%; }
+.study-label { pointer-events: none; display: inline-flex; align-items: center; }

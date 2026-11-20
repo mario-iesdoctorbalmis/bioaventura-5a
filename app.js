@@ -175,11 +175,18 @@ document.querySelector('#topic-grid').addEventListener('click', event => {
   if (diagram) startDiagram(diagram.dataset.diagram);
   if (study) {
     studyTopic = TOPICS.find(topic => topic.id === study.dataset.study);
+    const data = DIAGRAMS[studyTopic.id];
     document.querySelector('#study-title').textContent = studyTopic.name;
-    const image = document.querySelector('#study-image');
-    image.src = studyTopic.image;
-    image.alt = `Lámina original de ${studyTopic.name}`;
-    document.querySelector('#study-image-link').href = studyTopic.image;
+    const stage = document.querySelector('#study-stage');
+    if (data && data.image) {
+      const lines = data.zones.map(z => {
+        const lx = z.lx ?? z.x, ly = z.ly ?? z.y;
+        return (lx !== z.x || ly !== z.y) ? `<line x1="${lx}" y1="${ly}" x2="${z.x}" y2="${z.y}"/><circle cx="${z.x}" cy="${z.y}" r="0.85"/>` : '';
+      }).join('');
+      stage.innerHTML = `<img src="${data.image}" alt="Lámina de ${studyTopic.name}"><svg class="leader-lines" viewBox="0 0 100 100" preserveAspectRatio="none">${lines}</svg>${data.zones.map(zone => `<span class="drop-zone filled study-label" style="left:${zone.lx ?? zone.x}%;top:${zone.ly ?? zone.y}%">${zone.label}</span>`).join('')}`;
+    } else {
+      stage.innerHTML = `<img src="${studyTopic.image}" alt="Lámina de ${studyTopic.name}">`;
+    }
     studyDialog.showModal();
   }
 });
@@ -220,8 +227,12 @@ function startDiagram(topicId) {
     <p class="diagram-instruction">${data.instruction} <small>(También puedes pulsar una etiqueta y luego su círculo).</small></p>
     <div class="diagram-layout">
       <div class="diagram-stage">
-        ${data.image ? `<img src="${data.image}" alt="${data.title}">` : `<svg viewBox="${data.viewBox}" role="img" aria-label="${data.title}">${data.svg}</svg>`}
-        ${data.zones.map((zone, i) => `<button type="button" class="drop-zone" data-zone="${zone.id}" style="left:${zone.x}%;top:${zone.y}%" aria-label="Zona ${i + 1}">${i + 1}</button>`).join('')}
+        ${data.image ? `<img src="${data.image}" alt="${data.title}">` : `<svg class="diagram-svg" viewBox="${data.viewBox}" role="img" aria-label="${data.title}">${data.svg}</svg>`}
+        <svg class="leader-lines" viewBox="0 0 100 100" preserveAspectRatio="none">${data.zones.map(z => {
+          const lx = z.lx ?? z.x, ly = z.ly ?? z.y;
+          return (lx !== z.x || ly !== z.y) ? `<line x1="${lx}" y1="${ly}" x2="${z.x}" y2="${z.y}"/><circle cx="${z.x}" cy="${z.y}" r="0.85"/>` : '';
+        }).join('')}</svg>
+        ${data.zones.map((zone, i) => `<button type="button" class="drop-zone" data-zone="${zone.id}" style="left:${zone.lx ?? zone.x}%;top:${zone.ly ?? zone.y}%" aria-label="Zona ${i + 1}">${i + 1}</button>`).join('')}
       </div>
       <div class="label-bank" id="label-bank">
         ${shuffledLabels.map(zone => `<button type="button" class="drag-label" draggable="true" data-label="${zone.id}">${zone.label}</button>`).join('')}
