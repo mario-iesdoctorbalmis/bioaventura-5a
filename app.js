@@ -163,7 +163,7 @@ quizContent.addEventListener('click', event => {
   if (event.target.closest('[data-replay]')) startRound(round.topicId);
 });
 
-document.querySelector('#start-random').addEventListener('click', () => startRound(null));
+document.querySelector('#start-random')?.addEventListener('click', () => startRound(null));
 document.querySelector('[data-close-study]').addEventListener('click', () => studyDialog.close());
 document.querySelector('#study-play').addEventListener('click', () => { studyDialog.close(); startRound(studyTopic.id); });
 document.querySelector('#reset-progress').addEventListener('click', () => resetDialog.showModal());
@@ -358,17 +358,6 @@ async function loadLeaderboard() {
       const data = await res.json();
       if (Array.isArray(data)) {
         renderLeaderboard(data);
-        if (state.playerName) {
-          const match = data.find(r => String(r.nombre || '').toLowerCase() === state.playerName.toLowerCase());
-          if (match && Number(match.puntos) > state.score) {
-            state.score = Number(match.puntos);
-            state.correct = Math.max(state.correct, Number(match.aciertos) || 0);
-            state.games = Math.max(state.games, Number(match.partidas) || 0);
-            updateBadges();
-            saveState();
-            renderDashboard();
-          }
-        }
       }
     }
   } catch {} finally {
@@ -409,7 +398,7 @@ document.querySelector('#player-form').addEventListener('submit', async event =>
       if (res.ok) {
         const check = await res.json();
         if (check.status === 'wrong_password') {
-          errorEl.textContent = 'Contraseña incorrecta para este usuario.';
+          errorEl.textContent = 'Ese usuario ya está reservado. Elige otro nombre o prueba otra contraseña por si te has equivocado.';
           return;
         }
         if (check.status === 'ok') {
