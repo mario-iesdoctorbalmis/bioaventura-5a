@@ -1,4 +1,7 @@
 const STORAGE_KEY = 'bioaventura-progress-v1';
+const LEADERBOARD_KEY = 'bioaventura-leaderboard-v1';
+// Pega aquí la URL de tu Google Apps Script publicada como Aplicación web:
+const SHEETS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbykZ4i6HRc4uRVrYjjauYfgBV7bpZOpDWHnyrT75M6e3yPzilovffWyJYRt2cVN-4fv/exec';
 const ROUND_SIZE = 5;
 const BADGES = [
   { id: 'first', name: 'Primer paso', detail: 'Completa tu primera misión', icon: 'flag', earned: state => state.games >= 1 },
@@ -8,7 +11,7 @@ const BADGES = [
   { id: 'expert', name: 'Gran experto', detail: 'Acierta 50 preguntas', icon: 'trophy', earned: state => state.correct >= 50 }
 ];
 
-const defaultState = () => ({ score: 0, correct: 0, games: 0, perfect: 0, topics: [], badges: [] });
+const defaultState = () => ({ playerName: '', score: 0, correct: 0, games: 0, perfect: 0, topics: [], badges: [] });
 let state = loadState();
 let round = null;
 let studyTopic = null;
@@ -19,6 +22,7 @@ const diagramDialog = document.querySelector('#diagram-dialog');
 const diagramContent = document.querySelector('#diagram-content');
 const studyDialog = document.querySelector('#study-dialog');
 const resetDialog = document.querySelector('#reset-dialog');
+const playerDialog = document.querySelector('#player-dialog');
 let diagramState = null;
 
 function loadState() {
@@ -26,7 +30,7 @@ function loadState() {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (!saved || typeof saved !== 'object') return defaultState();
     const number = value => Number.isFinite(value) && value >= 0 ? Math.floor(value) : 0;
-    return { score: number(saved.score), correct: number(saved.correct), games: number(saved.games), perfect: number(saved.perfect), topics: Array.isArray(saved.topics) ? saved.topics.filter(id => TOPICS.some(topic => topic.id === id)) : [], badges: Array.isArray(saved.badges) ? saved.badges.filter(id => BADGES.some(badge => badge.id === id)) : [] };
+    return { playerName: typeof saved.playerName === 'string' ? saved.playerName : '', score: number(saved.score), correct: number(saved.correct), games: number(saved.games), perfect: number(saved.perfect), topics: Array.isArray(saved.topics) ? saved.topics.filter(id => TOPICS.some(topic => topic.id === id)) : [], badges: Array.isArray(saved.badges) ? saved.badges.filter(id => BADGES.some(badge => badge.id === id)) : [] };
   } catch {
     return defaultState();
   }
@@ -56,6 +60,7 @@ function updateBadges() {
 }
 
 function renderDashboard() {
+  document.querySelectorAll('[data-player-name]').forEach(el => el.textContent = state.playerName || 'Jugador');
   document.querySelectorAll('[data-score]').forEach(element => element.textContent = state.score);
   const level = Math.floor(state.score / 100) + 1;
   document.querySelectorAll('[data-level]').forEach(element => element.textContent = level);
@@ -123,6 +128,7 @@ function finishRound() {
   const newBadges = BADGES.filter(badge => state.badges.includes(badge.id) && !previousBadges.includes(badge.id));
   saveState();
   renderDashboard();
+  syncScoreToSheet();
   quizContent.innerHTML = `<div class="result"><div class="result-icon"><i data-lucide="trophy"></i></div><span class="quiz-kicker">MISIÓN COMPLETADA</span><h2 id="quiz-title">¡Buen trabajo!</h2><p>${round.correct === round.questions.length ? '¡Has acertado todas! Sigue explorando.' : 'Cada intento te ayuda a aprender algo nuevo.'}</p><div class="result-stats"><div class="result-stat"><strong>${round.correct} / ${round.questions.length}</strong><span>ACIERTOS</span></div><div class="result-stat"><strong>${round.points > 0 ? '+' : ''}${round.points}</strong><span>PUNTOS</span></div></div>${newBadges.length ? `<p>¡Nuevo emblema: ${newBadges.map(badge => badge.name).join(', ')}!</p>` : ''}<div class="result-actions"><button class="button secondary" data-close-quiz>Volver a misiones</button><button class="button primary" data-replay><i data-lucide="rotate-ccw"></i> Jugar otra vez</button></div></div>`;
   icons();
 }
@@ -212,6 +218,7 @@ function tryPlaceLabel(zoneId, labelId) {
     updateBadges();
     saveState();
     renderDashboard();
+    syncScoreToSheet();
     diagramContent.querySelector('#diagram-count').textContent = `${diagramState.placed.size} / ${diagramState.total}`;
     if (diagramState.placed.size === diagramState.total) {
       feedback.className = 'diagram-feedback ok';
@@ -288,3 +295,108 @@ document.addEventListener('keydown', event => {
     answerQuestion(index);
   }
 });
+
+function getLocalLeaderboard() {
+  try {
+    const list = JSON.parse(localStorage.getItem(LEADERBOARD_KEY));
+    return Array.isArray(list) ? list : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveLocalLeaderboard(entry) {
+  const list = getLocalLeaderboard();
+  const idx = list.findIndex(item => item.nombre.toLowerCase() === entry.nombre.toLowerCase());
+  if (idx >= 0) {
+    list[idx] = {
+      nombre: entry.nombre,
+      puntos: Math.max(list[idx].puntos, entry.puntos),
+      aciertos: Math.max(list[idx].aciertos, entry.aciertos),
+      partidas: Math.max(list[idx].partidas, entry.partidas),
+      fecha: entry.fecha
+    };
+  } else {
+    list.push(entry);
+  }
+  list.sort((a, b) => b.puntos - a.puntos);
+  try { localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(list.slice(0, 20))); } catch {}
+}
+
+async function syncScoreToSheet() {
+  if (!state.playerName) return;
+  const entry = {
+    nombre: state.playerName,
+    puntos: state.score,
+    aciertos: state.correct,
+    partidas: state.games,
+    fecha: new Date().toLocaleDateString('es-ES')
+  };
+  saveLocalLeaderboard(entry);
+  renderLeaderboard(getLocalLeaderboard());
+  if (!SHEETS_WEBAPP_URL) return;
+  try {
+    await fetch(SHEETS_WEBAPP_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(entry)
+    });
+  } catch {}
+}
+
+async function loadLeaderboard() {
+  const local = getLocalLeaderboard();
+  renderLeaderboard(local);
+  if (!SHEETS_WEBAPP_URL) return;
+  try {
+    const res = await fetch(SHEETS_WEBAPP_URL);
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        renderLeaderboard(data);
+        if (state.playerName) {
+          const match = data.find(r => String(r.nombre || '').toLowerCase() === state.playerName.toLowerCase());
+          if (match && Number(match.puntos) > state.score) {
+            state.score = Number(match.puntos);
+            state.correct = Math.max(state.correct, Number(match.aciertos) || 0);
+            state.games = Math.max(state.games, Number(match.partidas) || 0);
+            updateBadges();
+            saveState();
+            renderDashboard();
+          }
+        }
+      }
+    }
+  } catch {}
+}
+
+function renderLeaderboard(rows) {
+  const container = document.querySelector('#leaderboard-list');
+  if (!container) return;
+  if (!rows.length) {
+    container.innerHTML = '<p class="leaderboard-empty">Todavía no hay puntuaciones guardadas. ¡Completa una misión para aparecer aquí!</p>';
+    return;
+  }
+  container.innerHTML = `<table class="leaderboard-table"><thead><tr><th>#</th><th>Explorador</th><th>Puntos</th><th>Aciertos</th></tr></thead><tbody>${rows.map((r, i) => `<tr class="${r.nombre.toLowerCase() === (state.playerName || '').toLowerCase() ? 'me' : ''}"><td>${i + 1}</td><td>${r.nombre}</td><td><strong>${r.puntos}</strong></td><td>${r.aciertos}</td></tr>`).join('')}</tbody></table>`;
+}
+
+document.querySelector('#change-player').addEventListener('click', () => {
+  document.querySelector('#player-input').value = state.playerName || '';
+  playerDialog.showModal();
+});
+document.querySelector('[data-close-player]').addEventListener('click', () => playerDialog.close());
+document.querySelector('#player-form').addEventListener('submit', event => {
+  event.preventDefault();
+  const name = document.querySelector('#player-input').value.trim();
+  if (!name) return;
+  state.playerName = name;
+  saveState();
+  renderDashboard();
+  loadLeaderboard();
+  playerDialog.close();
+});
+document.querySelector('#refresh-leaderboard').addEventListener('click', loadLeaderboard);
+
+loadLeaderboard();
+if (!state.playerName) playerDialog.showModal();

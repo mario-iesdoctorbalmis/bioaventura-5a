@@ -17,7 +17,7 @@
   <header class="topbar">
     <div class="topbar-inner">
       <a class="brand" href="#inicio" aria-label="Bioaventura, inicio"><span class="brand-mark"><i data-lucide="sparkles"></i></span><span>bio<span>aventura</span><small>EL CUERPO HUMANO</small></span></a>
-      <div class="header-right"><span class="header-label">MI PROGRESO</span><div class="header-stat"><i data-lucide="star"></i><strong data-score>0</strong><span>pts</span></div><div class="header-level"><span>NIVEL</span><strong data-level>1</strong></div></div>
+      <div class="header-right"><button class="player-pill" id="change-player" title="Cambiar jugador"><i data-lucide="user"></i><span data-player-name>Jugador</span></button><span class="header-label">MI PROGRESO</span><div class="header-stat"><i data-lucide="star"></i><strong data-score>0</strong><span>pts</span></div><div class="header-level"><span>NIVEL</span><strong data-level>1</strong></div></div>
     </div>
   </header>
 
@@ -56,6 +56,19 @@
     <section class="topics-section" id="temas"><div class="section-heading"><div><div class="eyebrow dark"><span></span> ELIGE TU MISIÓN</div><h2>¿Qué exploramos hoy?</h2><p>Elige un tema y ponte a prueba.</p></div><div class="section-count"><i data-lucide="layers-2"></i> 5 TEMAS</div></div><div class="topic-grid" id="topic-grid"></div></section>
 
     <section class="badges-section" aria-labelledby="badges-title"><div class="section-heading"><div><div class="eyebrow dark"><span></span> TU COLECCIÓN</div><h2 id="badges-title">Emblemas de explorador</h2><p>Hay logros esperándote en cada aventura.</p></div><div class="badge-count"><strong id="badge-count">0</strong> / 5 CONSEGUIDOS</div></div><div class="badge-grid" id="badge-grid"></div></section>
+
+    <section class="leaderboard-section" id="clasificacion" aria-labelledby="leaderboard-title">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow dark"><span></span> CLASIFICACIÓN</div>
+          <h2 id="leaderboard-title">Tabla de puntuación</h2>
+          <p>Los mejores exploradores de 5.º de primaria.</p>
+        </div>
+        <button class="button secondary" id="refresh-leaderboard"><i data-lucide="refresh-cw"></i> Actualizar</button>
+      </div>
+      <div class="leaderboard-card" id="leaderboard-list"></div>
+    </section>
+
     <footer><span><span class="footer-mark">✳</span> Hecho para mentes curiosas.</span><button class="text-button" id="reset-progress"><i data-lucide="rotate-ccw"></i> Reiniciar progreso</button></footer>
   </main>
 
@@ -63,5 +76,18 @@
   <dialog id="diagram-dialog" class="dialog diagram-dialog" aria-labelledby="diagram-title"><div id="diagram-content"></div></dialog>
   <dialog id="study-dialog" class="dialog study-dialog" aria-labelledby="study-title"><div class="dialog-header"><div><span class="overline">CUADERNO DE EXPLORACIÓN</span><h2 id="study-title">Tu lámina</h2></div><button class="icon-button" data-close-study aria-label="Cerrar lámina" title="Cerrar"><i data-lucide="x"></i></button></div><p>Observa la lámina original. Puedes ampliar la imagen para verla mejor.</p><div class="study-image-wrap"><img id="study-image" alt="Lámina de estudio original"></div><div class="study-actions"><a id="study-image-link" class="button secondary" target="_blank" rel="noopener"><i data-lucide="external-link"></i> Abrir imagen</a><button class="button primary" id="study-play"><i data-lucide="play" fill="currentColor"></i> Practicar este tema</button></div></dialog>
   <dialog id="reset-dialog" class="dialog confirm-dialog" aria-labelledby="reset-title"><div class="dialog-header"><h2 id="reset-title">¿Empezar de nuevo?</h2><button class="icon-button" data-cancel-reset aria-label="Cerrar" title="Cerrar"><i data-lucide="x"></i></button></div><p>Se borrarán los puntos, niveles y emblemas guardados en este navegador.</p><div class="study-actions"><button class="button secondary" data-cancel-reset>Cancelar</button><button class="button danger" id="confirm-reset">Sí, reiniciar</button></div></dialog>
+  <dialog id="player-dialog" class="dialog confirm-dialog" aria-labelledby="player-title">
+    <div class="dialog-header">
+      <h2 id="player-title">¿Cómo te llamas?</h2>
+      <button class="icon-button" data-close-player aria-label="Cerrar" title="Cerrar"><i data-lucide="x"></i></button>
+    </div>
+    <p>Escribe tu nombre para guardar tu puntuación en la tabla.</p>
+    <form id="player-form" class="player-form">
+      <input type="text" id="player-input" maxlength="24" placeholder="Tu nombre..." required>
+      <div class="study-actions">
+        <button type="submit" class="button primary">¡A jugar!</button>
+      </div>
+    </form>
+  </dialog>
 </body>
 </html>
