@@ -178,13 +178,15 @@ document.querySelector('#topic-grid').addEventListener('click', event => {
     const data = DIAGRAMS[studyTopic.id];
     document.querySelector('#study-title').textContent = studyTopic.name;
     const stage = document.querySelector('#study-stage');
+    stage.style.setProperty('--zoom', '1');
+    const studyZoomLabel = studyDialog.querySelector('[data-zoom-label]');
+    if (studyZoomLabel) studyZoomLabel.textContent = '100%';
     if (data && data.image) {
-      const lines = data.zones.map(z => {
-        const lx = z.lx ?? z.x, ly = z.ly ?? z.y;
-        return (lx !== z.x || ly !== z.y) ? `<line x1="${lx}" y1="${ly}" x2="${z.x}" y2="${z.y}"/><circle cx="${z.x}" cy="${z.y}" r="0.85"/>` : '';
-      }).join('');
-      stage.innerHTML = `<img src="${data.image}" alt="Lámina de ${studyTopic.name}"><svg class="leader-lines" viewBox="0 0 100 100" preserveAspectRatio="none">${lines}</svg>${data.zones.map(zone => `<span class="drop-zone filled study-label" style="left:${zone.lx ?? zone.x}%;top:${zone.ly ?? zone.y}%">${zone.label}</span>`).join('')}`;
+      const { html, hasLeaders } = renderDiagramCanvas(data, 'study', `Lámina de ${studyTopic.name}`);
+      stage.classList.toggle('has-leaders', hasLeaders);
+      stage.innerHTML = html;
     } else {
+      stage.classList.remove('has-leaders');
       stage.innerHTML = `<img src="${studyTopic.image}" alt="Lámina de ${studyTopic.name}">`;
     }
     studyDialog.showModal();
@@ -213,26 +215,50 @@ document.querySelector('#confirm-reset').addEventListener('click', () => { state
 renderTopics();
 renderDashboard();
 
+function renderDiagramCanvas(data, mode, altText) {
+  const hasLeaders = data.zones.some(z => (z.lx ?? z.x) !== z.x || (z.ly ?? z.y) !== z.y);
+  const lines = data.zones.map(z => {
+    const lx = z.lx ?? z.x, ly = z.ly ?? z.y;
+    return (lx !== z.x || ly !== z.y) ? `<line x1="${lx}" y1="${ly}" x2="${z.x}" y2="${z.y}" vector-effect="non-scaling-stroke"/>` : '';
+  }).join('');
+  const dots = data.zones.map(z => {
+    const lx = z.lx ?? z.x, ly = z.ly ?? z.y;
+    return (lx !== z.x || ly !== z.y) ? `<span class="target-dot" style="left:${z.x}%;top:${z.y}%"></span>` : '';
+  }).join('');
+  const items = data.zones.map((zone, i) => {
+    const lx = zone.lx ?? zone.x, ly = zone.ly ?? zone.y;
+    const alignClass = zone.align === 'left' ? 'align-left' : zone.align === 'right' ? 'align-right' : '';
+    if (mode === 'study') {
+      return `<span class="drop-zone filled study-label ${alignClass}" style="left:${lx}%;top:${ly}%">${zone.label}</span>`;
+    }
+    return `<button type="button" class="drop-zone ${alignClass}" data-zone="${zone.id}" style="left:${lx}%;top:${ly}%" aria-label="Zona ${i + 1}">${i + 1}</button>`;
+  }).join('');
+  const media = data.image
+    ? `<img src="${data.image}" alt="${altText || data.title}" onload="this.parentElement.style.setProperty('--ratio', this.naturalWidth / this.naturalHeight)">`
+    : `<svg class="diagram-svg" viewBox="${data.viewBox}" role="img" aria-label="${data.title}">${data.svg}</svg>`;
+  return {
+    hasLeaders,
+    html: `<div class="diagram-canvas" style="--ratio:${data.ratio || 1}">${media}<svg class="leader-lines" viewBox="0 0 100 100" preserveAspectRatio="none">${lines}</svg>${dots}${items}</div>`
+  };
+}
+
 function startDiagram(topicId) {
   const data = DIAGRAMS[topicId];
   const topic = TOPICS.find(item => item.id === topicId);
   if (!data || !topic) return;
   diagramState = { topicId, placed: new Set(), selectedLabel: null, total: data.zones.length };
   const shuffledLabels = shuffle(data.zones);
+  const { html, hasLeaders } = renderDiagramCanvas(data, 'play', data.title);
   diagramContent.innerHTML = `
     <div class="quiz-top">
       <div class="quiz-topic"><span class="quiz-topic-icon ${topic.color}"><i data-lucide="${topic.icon}"></i></span><span>${data.title}</span></div>
       <div class="quiz-meta"><span id="diagram-count">0 / ${data.zones.length}</span><button class="icon-button" data-close-diagram aria-label="Cerrar" title="Cerrar"><i data-lucide="x"></i></button></div>
     </div>
     <p class="diagram-instruction">${data.instruction} <small>(También puedes pulsar una etiqueta y luego su círculo).</small></p>
+    <div class="zoom-bar" data-zoom-target="#diagram-stage-box"><button type="button" class="icon-button" data-zoom="-0.25" aria-label="Alejar"><i data-lucide="zoom-out"></i></button><span data-zoom-label>100%</span><button type="button" class="icon-button" data-zoom="0.25" aria-label="Acercar"><i data-lucide="zoom-in"></i></button><button type="button" class="icon-button" data-zoom="reset" aria-label="Restablecer zoom"><i data-lucide="rotate-ccw"></i></button></div>
     <div class="diagram-layout">
-      <div class="diagram-stage">
-        ${data.image ? `<img src="${data.image}" alt="${data.title}">` : `<svg class="diagram-svg" viewBox="${data.viewBox}" role="img" aria-label="${data.title}">${data.svg}</svg>`}
-        <svg class="leader-lines" viewBox="0 0 100 100" preserveAspectRatio="none">${data.zones.map(z => {
-          const lx = z.lx ?? z.x, ly = z.ly ?? z.y;
-          return (lx !== z.x || ly !== z.y) ? `<line x1="${lx}" y1="${ly}" x2="${z.x}" y2="${z.y}"/><circle cx="${z.x}" cy="${z.y}" r="0.85"/>` : '';
-        }).join('')}</svg>
-        ${data.zones.map((zone, i) => `<button type="button" class="drop-zone" data-zone="${zone.id}" style="left:${zone.lx ?? zone.x}%;top:${zone.ly ?? zone.y}%" aria-label="Zona ${i + 1}">${i + 1}</button>`).join('')}
+      <div id="diagram-stage-box" class="diagram-stage ${hasLeaders ? 'has-leaders' : ''}">
+        ${html}
       </div>
       <div class="label-bank" id="label-bank">
         ${shuffledLabels.map(zone => `<button type="button" class="drag-label" draggable="true" data-label="${zone.id}">${zone.label}</button>`).join('')}
@@ -333,6 +359,20 @@ diagramContent.addEventListener('drop', event => {
   zoneBtn.classList.remove('drag-over');
   const labelId = event.dataTransfer.getData('text/plain') || diagramState?.selectedLabel;
   if (labelId) tryPlaceLabel(zoneBtn.dataset.zone, labelId);
+});
+
+document.addEventListener('click', event => {
+  const btn = event.target.closest('[data-zoom]');
+  if (!btn) return;
+  const bar = btn.closest('[data-zoom-target]');
+  const stage = bar && document.querySelector(bar.dataset.zoomTarget);
+  if (!stage) return;
+  const current = parseFloat(stage.style.getPropertyValue('--zoom') || '1') || 1;
+  const action = btn.dataset.zoom;
+  const next = action === 'reset' ? 1 : Math.min(2.25, Math.max(0.75, +(current + parseFloat(action)).toFixed(2)));
+  stage.style.setProperty('--zoom', String(next));
+  const label = bar.querySelector('[data-zoom-label]');
+  if (label) label.textContent = `${Math.round(next * 100)}%`;
 });
 
 document.addEventListener('keydown', event => {
