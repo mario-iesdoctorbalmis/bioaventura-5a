@@ -390,7 +390,11 @@ document.querySelector('#player-form').addEventListener('submit', event => {
   event.preventDefault();
   const name = document.querySelector('#player-input').value.trim();
   if (!name) return;
-  state.playerName = name;
+  if (name.toLowerCase() !== (state.playerName || '').toLowerCase()) {
+    state = { ...defaultState(), playerName: name };
+  } else {
+    state.playerName = name;
+  }
   saveState();
   renderDashboard();
   loadLeaderboard();
