@@ -551,3 +551,80 @@ document.querySelector('#refresh-leaderboard').addEventListener('click', loadLea
 
 loadLeaderboard();
 if (!state.playerName) playerDialog.showModal();
+
+const TRACKS = [
+  { title: 'Esqueleto Urbano', subtitle: 'Rap de los huesos', src: 'resources/Esqueleto_Urbano.mp3' },
+  { title: 'Ritmo Anatómico', subtitle: 'Rap de los músculos', src: 'resources/Ritmo_anatómico.mp3' }
+];
+const audio = document.querySelector('#music-audio');
+const trackList = document.querySelector('#music-tracks');
+const toggleBtn = document.querySelector('#music-toggle');
+const seekInput = document.querySelector('#music-seek');
+let currentTrack = 0;
+
+function formatTime(sec) {
+  if (!Number.isFinite(sec)) return '0:00';
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m}:${s < 10 ? '0' : ''}${s}`;
+}
+
+function renderTracks() {
+  if (!trackList) return;
+  trackList.innerHTML = TRACKS.map((t, i) => `<button type="button" class="music-track ${i === currentTrack ? 'active' : ''}" data-track="${i}"><span class="music-track-icon"><i data-lucide="music"></i></span><span><strong>${t.title}</strong><small>${t.subtitle}</small></span></button>`).join('');
+  icons();
+}
+
+function updatePlayButton() {
+  if (!toggleBtn || !audio) return;
+  const playing = !audio.paused;
+  toggleBtn.innerHTML = `<i data-lucide="${playing ? 'pause' : 'play'}" fill="currentColor"></i> <span>${playing ? 'Pausar' : 'Reproducir'}</span>`;
+  icons();
+}
+
+function selectTrack(index, autoplay = false) {
+  currentTrack = (index + TRACKS.length) % TRACKS.length;
+  audio.src = encodeURI(TRACKS[currentTrack].src);
+  seekInput.value = 0;
+  document.querySelector('#music-time').textContent = '0:00';
+  document.querySelector('#music-duration').textContent = '0:00';
+  renderTracks();
+  if (autoplay) audio.play().catch(() => {});
+  updatePlayButton();
+}
+
+if (audio && trackList) {
+  selectTrack(0, false);
+  trackList.addEventListener('click', event => {
+    const btn = event.target.closest('[data-track]');
+    if (!btn) return;
+    const idx = Number(btn.dataset.track);
+    if (idx === currentTrack) {
+      if (audio.paused) audio.play().catch(() => {});
+      else audio.pause();
+      updatePlayButton();
+    } else {
+      selectTrack(idx, true);
+    }
+  });
+  toggleBtn.addEventListener('click', () => {
+    if (audio.paused) audio.play().catch(() => {});
+    else audio.pause();
+    updatePlayButton();
+  });
+  document.querySelector('#music-prev').addEventListener('click', () => selectTrack(currentTrack - 1, !audio.paused));
+  document.querySelector('#music-next').addEventListener('click', () => selectTrack(currentTrack + 1, true));
+  audio.addEventListener('loadedmetadata', () => {
+    document.querySelector('#music-duration').textContent = formatTime(audio.duration);
+  });
+  audio.addEventListener('timeupdate', () => {
+    document.querySelector('#music-time').textContent = formatTime(audio.currentTime);
+    if (audio.duration) seekInput.value = Math.round((audio.currentTime / audio.duration) * 100);
+  });
+  audio.addEventListener('ended', () => selectTrack(currentTrack + 1, true));
+  audio.addEventListener('play', updatePlayButton);
+  audio.addEventListener('pause', updatePlayButton);
+  seekInput.addEventListener('input', () => {
+    if (audio.duration) audio.currentTime = (Number(seekInput.value) / 100) * audio.duration;
+  });
+}

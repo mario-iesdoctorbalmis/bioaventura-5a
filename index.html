@@ -26,6 +26,32 @@
 
     <section class="topics-section" id="temas"><div class="section-heading"><div><div class="eyebrow dark"><span></span> ELIGE TU MISIÓN</div><h2>¿Qué exploramos hoy?</h2><p>Elige un tema y ponte a prueba.</p></div><div class="section-count"><i data-lucide="layers-2"></i> 5 TEMAS</div></div><div class="topic-grid" id="topic-grid"></div></section>
 
+    <section class="music-section" id="musica" aria-labelledby="music-title">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow dark"><span></span> MÚSICA PARA REPASAR</div>
+          <h2 id="music-title">Raps del cuerpo humano</h2>
+          <p>Escucha las canciones para aprender dónde está cada hueso y músculo.</p>
+        </div>
+      </div>
+      <div class="music-card">
+        <div class="music-tracks" id="music-tracks"></div>
+        <div class="music-player-bar">
+          <div class="music-buttons">
+            <button type="button" class="icon-button" id="music-prev" aria-label="Canción anterior"><i data-lucide="skip-back"></i></button>
+            <button type="button" class="button primary music-play" id="music-toggle"><i data-lucide="play" fill="currentColor"></i> <span>Reproducir</span></button>
+            <button type="button" class="icon-button" id="music-next" aria-label="Siguiente canción"><i data-lucide="skip-forward"></i></button>
+          </div>
+          <div class="music-progress-wrap">
+            <span id="music-time">0:00</span>
+            <input type="range" id="music-seek" min="0" max="100" value="0" aria-label="Progreso de la canción">
+            <span id="music-duration">0:00</span>
+          </div>
+        </div>
+        <audio id="music-audio" preload="metadata"></audio>
+      </div>
+    </section>
+
     <section class="badges-section" aria-labelledby="badges-title"><div class="section-heading"><div><div class="eyebrow dark"><span></span> TU COLECCIÓN</div><h2 id="badges-title">Emblemas de explorador</h2><p>Hay logros esperándote en cada aventura.</p></div><div class="badge-count"><strong id="badge-count">0</strong> / 14 CONSEGUIDOS</div></div><div class="badge-grid" id="badge-grid"></div></section>
 
     <section class="leaderboard-section" id="clasificacion" aria-labelledby="leaderboard-title">
