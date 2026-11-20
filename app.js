@@ -180,7 +180,7 @@ function startDiagram(topicId) {
     <p class="diagram-instruction">${data.instruction} <small>(También puedes pulsar una etiqueta y luego su círculo).</small></p>
     <div class="diagram-layout">
       <div class="diagram-stage">
-        <svg viewBox="${data.viewBox}" role="img" aria-label="${data.title}">${data.svg}</svg>
+        ${data.image ? `<img src="${data.image}" alt="${data.title}">` : `<svg viewBox="${data.viewBox}" role="img" aria-label="${data.title}">${data.svg}</svg>`}
         ${data.zones.map((zone, i) => `<button type="button" class="drop-zone" data-zone="${zone.id}" style="left:${zone.x}%;top:${zone.y}%" aria-label="Zona ${i + 1}">${i + 1}</button>`).join('')}
       </div>
       <div class="label-bank" id="label-bank">
