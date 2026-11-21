@@ -526,7 +526,18 @@ document.querySelector('#player-form').addEventListener('submit', async event =>
           updateBadges();
           saveState();
           renderDashboard();
-          loadLeaderboard();
+          const whatsNew = document.querySelector('#whats-new');
+if (whatsNew) {
+  try {
+    if (localStorage.getItem('bioaventura-whats-new-karaoke') === '1') whatsNew.hidden = true;
+  } catch {}
+  document.querySelector('#dismiss-whats-new')?.addEventListener('click', () => {
+    whatsNew.hidden = true;
+    try { localStorage.setItem('bioaventura-whats-new-karaoke', '1'); } catch {}
+  });
+}
+
+loadLeaderboard();
           playerDialog.close();
           return;
         }
@@ -544,10 +555,32 @@ document.querySelector('#player-form').addEventListener('submit', async event =>
   }
   saveState();
   renderDashboard();
-  loadLeaderboard();
+  const whatsNew = document.querySelector('#whats-new');
+if (whatsNew) {
+  try {
+    if (localStorage.getItem('bioaventura-whats-new-karaoke') === '1') whatsNew.hidden = true;
+  } catch {}
+  document.querySelector('#dismiss-whats-new')?.addEventListener('click', () => {
+    whatsNew.hidden = true;
+    try { localStorage.setItem('bioaventura-whats-new-karaoke', '1'); } catch {}
+  });
+}
+
+loadLeaderboard();
   playerDialog.close();
 });
 document.querySelector('#refresh-leaderboard').addEventListener('click', loadLeaderboard);
+
+const whatsNew = document.querySelector('#whats-new');
+if (whatsNew) {
+  try {
+    if (localStorage.getItem('bioaventura-whats-new-karaoke') === '1') whatsNew.hidden = true;
+  } catch {}
+  document.querySelector('#dismiss-whats-new')?.addEventListener('click', () => {
+    whatsNew.hidden = true;
+    try { localStorage.setItem('bioaventura-whats-new-karaoke', '1'); } catch {}
+  });
+}
 
 loadLeaderboard();
 if (!state.playerName) playerDialog.showModal();

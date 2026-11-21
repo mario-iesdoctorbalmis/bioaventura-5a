@@ -103,3 +103,12 @@
 .karaoke-box { position: relative; margin-top: 12px; max-height: 220px; overflow-y: auto; padding: 12px; border-radius: 12px; background: #f8fbf6; border: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px; }
 .karaoke-line { margin: 0; padding: 6px 12px; border-radius: 8px; font: 600 .92rem/1.4 'DM Sans', sans-serif; color: var(--ink); cursor: pointer; transition: background .15s; }
 .karaoke-line:hover { background: #edf4ec; }
+
+/* Cartel de novedades */
+.whats-new { display: flex; align-items: center; justify-content: space-between; gap: 14px; background: #fff6dc; border: 2px solid #f2d27a; border-radius: 12px; padding: 12px 16px; margin-bottom: 14px; }
+.whats-new[hidden] { display: none; }
+.whats-new-copy { display: flex; align-items: center; gap: 12px; }
+.whats-new-icon { width: 36px; height: 36px; border-radius: 10px; background: #ffca60; color: #203d36; display: grid; place-items: center; flex: none; }
+.whats-new-copy strong { display: block; font: 900 .95rem/1.2 'Nunito', sans-serif; color: var(--ink); }
+.whats-new-copy p { margin: 2px 0 0; font-size: .88rem; color: #4d6459; }
+.whats-new-copy a { color: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
