@@ -110,11 +110,26 @@ function renderTopics() {
   icons();
 }
 
+let quizTimer = null;
+let diagramTimer = null;
+
+function formatElapsed(ms) {
+  const sec = Math.max(0, Math.floor(ms / 1000));
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${m}:${s < 10 ? '0' : ''}${s}`;
+}
+
 function startRound(topicId) {
   const pool = topicId ? QUESTIONS.filter(question => question.topic === topicId) : QUESTIONS;
   const questions = shuffle(pool).slice(0, ROUND_SIZE).map(question => ({ ...question, shuffledOptions: shuffle(question.options.map((text, index) => ({ text, correct: index === question.answer }))) }));
   round = { topicId, questions, index: 0, correct: 0, points: 0, answered: false, startedAt: Date.now() };
+  clearInterval(quizTimer);
   renderQuestion();
+  quizTimer = setInterval(() => {
+    const el = quizContent.querySelector('#quiz-timer');
+    if (el && round) el.textContent = `⏱ ${formatElapsed(Date.now() - round.startedAt)}`;
+  }, 500);
   if (!quizDialog.open) quizDialog.showModal();
 }
 
@@ -122,7 +137,8 @@ function renderQuestion() {
   const question = round.questions[round.index];
   const topic = TOPICS.find(item => item.id === question.topic);
   round.answered = false;
-  quizContent.innerHTML = `<div class="quiz-top"><div class="quiz-topic"><span class="quiz-topic-icon ${topic.color}"><i data-lucide="${topic.icon}"></i></span><span>${topic.name}</span></div><div class="quiz-meta"><span>${round.index + 1} / ${round.questions.length}</span><button class="icon-button" data-close-quiz aria-label="Salir de la misión" title="Salir"><i data-lucide="x"></i></button></div></div><div class="quiz-progress"><span style="width:${round.index / round.questions.length * 100}%"></span></div><span class="quiz-kicker">PREGUNTA ${round.index + 1}</span><h2 class="quiz-question" id="quiz-title">${question.q}</h2><div class="answers">${question.shuffledOptions.map((option, index) => `<button class="answer" data-answer="${index}"><span class="answer-letter">${String.fromCharCode(65 + index)}</span>${option.text}</button>`).join('')}</div><div id="feedback" aria-live="polite"></div><div class="quiz-bottom"><span>+10 por acierto · −5 por fallo</span><span>¡Tú puedes!</span></div>`;
+  const elapsed = formatElapsed(Date.now() - round.startedAt);
+  quizContent.innerHTML = `<div class="quiz-top"><div class="quiz-topic"><span class="quiz-topic-icon ${topic.color}"><i data-lucide="${topic.icon}"></i></span><span>${topic.name}</span></div><div class="quiz-meta"><span class="timer-pill" id="quiz-timer">⏱ ${elapsed}</span><span>${round.index + 1} / ${round.questions.length}</span><button class="icon-button" data-close-quiz aria-label="Salir de la misión" title="Salir"><i data-lucide="x"></i></button></div></div><div class="quiz-progress"><span style="width:${round.index / round.questions.length * 100}%"></span></div><span class="quiz-kicker">PREGUNTA ${round.index + 1}</span><h2 class="quiz-question" id="quiz-title">${question.q}</h2><div class="answers">${question.shuffledOptions.map((option, index) => `<button class="answer" data-answer="${index}"><span class="answer-letter">${String.fromCharCode(65 + index)}</span>${option.text}</button>`).join('')}</div><div id="feedback" aria-live="polite"></div><div class="quiz-bottom"><span>+10 por acierto · −5 por fallo</span><span>¡Tú puedes!</span></div>`;
   icons();
 }
 
@@ -153,8 +169,10 @@ function answerQuestion(index) {
 }
 
 function finishRound() {
+  clearInterval(quizTimer);
+  const elapsedMs = round.startedAt ? Date.now() - round.startedAt : 0;
   state.games++;
-  if (round.startedAt && Date.now() - round.startedAt < 30000) state.fastGame = true;
+  if (round.startedAt && elapsedMs < 30000) state.fastGame = true;
   if (round.correct === round.questions.length) state.perfect++;
   if (round.topicId && !state.topics.includes(round.topicId)) state.topics.push(round.topicId);
   const previousBadges = [...state.badges];
@@ -163,7 +181,7 @@ function finishRound() {
   saveState();
   renderDashboard();
   syncScoreToSheet();
-  quizContent.innerHTML = `<div class="result"><div class="result-icon"><i data-lucide="trophy"></i></div><span class="quiz-kicker">MISIÓN COMPLETADA</span><h2 id="quiz-title">¡Buen trabajo!</h2><p>${round.correct === round.questions.length ? '¡Has acertado todas! Sigue explorando.' : 'Cada intento te ayuda a aprender algo nuevo.'}</p><div class="result-stats"><div class="result-stat"><strong>${round.correct} / ${round.questions.length}</strong><span>ACIERTOS</span></div><div class="result-stat"><strong>${round.points > 0 ? '+' : ''}${round.points}</strong><span>PUNTOS</span></div></div>${newBadges.length ? `<p>¡Nuevo emblema: ${newBadges.map(badge => badge.name).join(', ')}!</p>` : ''}<div class="result-actions"><button class="button secondary" data-close-quiz>Volver a misiones</button><button class="button primary" data-replay><i data-lucide="rotate-ccw"></i> Jugar otra vez</button></div></div>`;
+  quizContent.innerHTML = `<div class="result"><div class="result-icon"><i data-lucide="trophy"></i></div><span class="quiz-kicker">MISIÓN COMPLETADA</span><h2 id="quiz-title">¡Buen trabajo!</h2><p>${round.correct === round.questions.length ? '¡Has acertado todas! Sigue explorando.' : 'Cada intento te ayuda a aprender algo nuevo.'}</p><div class="result-stats"><div class="result-stat"><strong>${round.correct} / ${round.questions.length}</strong><span>ACIERTOS</span></div><div class="result-stat"><strong>${round.points > 0 ? '+' : ''}${round.points}</strong><span>PUNTOS</span></div><div class="result-stat"><strong>${formatElapsed(elapsedMs)}</strong><span>TIEMPO</span></div></div>${newBadges.length ? `<p>¡Nuevo emblema: ${newBadges.map(badge => badge.name).join(', ')}!</p>` : ''}<div class="result-actions"><button class="button secondary" data-close-quiz>Volver a misiones</button><button class="button primary" data-replay><i data-lucide="rotate-ccw"></i> Jugar otra vez</button></div></div>`;
   icons();
 }
 
@@ -246,15 +264,16 @@ function startDiagram(topicId) {
   const data = DIAGRAMS[topicId];
   const topic = TOPICS.find(item => item.id === topicId);
   if (!data || !topic) return;
-  diagramState = { topicId, placed: new Set(), selectedLabel: null, total: data.zones.length };
+  diagramState = { topicId, placed: new Set(), selectedLabel: null, total: data.zones.length, startedAt: Date.now() };
+  clearInterval(diagramTimer);
   const shuffledLabels = shuffle(data.zones);
   const { html, hasLeaders } = renderDiagramCanvas(data, 'play', data.title);
   diagramContent.innerHTML = `
     <div class="quiz-top">
       <div class="quiz-topic"><span class="quiz-topic-icon ${topic.color}"><i data-lucide="${topic.icon}"></i></span><span>${data.title}</span></div>
-      <div class="quiz-meta"><span id="diagram-count">0 / ${data.zones.length}</span><button class="icon-button" data-close-diagram aria-label="Cerrar" title="Cerrar"><i data-lucide="x"></i></button></div>
+      <div class="quiz-meta"><span class="timer-pill" id="diagram-timer">⏱ 0:00</span><span id="diagram-count">0 / ${data.zones.length}</span><button class="icon-button" data-close-diagram aria-label="Cerrar" title="Cerrar"><i data-lucide="x"></i></button></div>
     </div>
-    <p class="diagram-instruction">${data.instruction} <small>(También puedes pulsar una etiqueta y luego su círculo).</small></p>
+    <p class="diagram-instruction"><strong>Arrastra (PC)</strong> o <strong>selecciona y apunta (Tablet/móvil)</strong> cada elemento a su lugar en el dibujo.</p>
     <div class="zoom-bar" data-zoom-target="#diagram-stage-box"><button type="button" class="icon-button" data-zoom="-0.25" aria-label="Alejar"><i data-lucide="zoom-out"></i></button><span data-zoom-label>100%</span><button type="button" class="icon-button" data-zoom="0.25" aria-label="Acercar"><i data-lucide="zoom-in"></i></button><button type="button" class="icon-button" data-zoom="reset" aria-label="Restablecer zoom"><i data-lucide="rotate-ccw"></i></button></div>
     <div class="diagram-layout">
       <div id="diagram-stage-box" class="diagram-stage ${hasLeaders ? 'has-leaders' : ''}">
@@ -267,6 +286,10 @@ function startDiagram(topicId) {
     <div id="diagram-feedback" class="diagram-feedback" aria-live="polite"></div>
   `;
   icons();
+  diagramTimer = setInterval(() => {
+    const el = diagramContent.querySelector('#diagram-timer');
+    if (el && diagramState) el.textContent = `⏱ ${formatElapsed(Date.now() - diagramState.startedAt)}`;
+  }, 500);
   if (!diagramDialog.open) diagramDialog.showModal();
 }
 
@@ -292,12 +315,14 @@ function tryPlaceLabel(zoneId, labelId) {
     syncScoreToSheet();
     diagramContent.querySelector('#diagram-count').textContent = `${diagramState.placed.size} / ${diagramState.total}`;
     if (diagramState.placed.size === diagramState.total) {
+      clearInterval(diagramTimer);
+      const elapsed = formatElapsed(Date.now() - diagramState.startedAt);
       state.diagrams = (state.diagrams || 0) + 1;
       updateBadges();
       saveState();
       renderDashboard();
       feedback.className = 'diagram-feedback ok';
-      feedback.textContent = '¡Genial! Has colocado todas las etiquetas en su sitio (+5 pts por cada una).';
+      feedback.textContent = `¡Genial! Has colocado todas las etiquetas en ${elapsed} (+5 pts por cada una).`;
     } else {
       feedback.className = 'diagram-feedback ok';
       feedback.textContent = '¡Correcto! +5 puntos.';
@@ -360,6 +385,9 @@ diagramContent.addEventListener('drop', event => {
   const labelId = event.dataTransfer.getData('text/plain') || diagramState?.selectedLabel;
   if (labelId) tryPlaceLabel(zoneBtn.dataset.zone, labelId);
 });
+
+quizDialog.addEventListener('close', () => clearInterval(quizTimer));
+diagramDialog.addEventListener('close', () => clearInterval(diagramTimer));
 
 document.addEventListener('click', event => {
   const btn = event.target.closest('[data-zoom]');

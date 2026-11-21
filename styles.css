@@ -112,3 +112,4 @@
 .whats-new-copy strong { display: block; font: 900 .95rem/1.2 'Nunito', sans-serif; color: var(--ink); }
 .whats-new-copy p { margin: 2px 0 0; font-size: .88rem; color: #4d6459; }
 .whats-new-copy a { color: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+.timer-pill { background: #edf3ec; color: #25483f; padding: 4px 10px; border-radius: 999px; font: 800 .8rem/1 'Nunito', sans-serif; font-variant-numeric: tabular-nums; }
