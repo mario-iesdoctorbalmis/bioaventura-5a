@@ -557,11 +557,11 @@ document.querySelector('#player-form').addEventListener('submit', async event =>
           const whatsNew = document.querySelector('#whats-new');
 if (whatsNew) {
   try {
-    if (localStorage.getItem('bioaventura-whats-new-karaoke') === '1') whatsNew.hidden = true;
+    if (localStorage.getItem('bioaventura-whats-new-v2') === '1') whatsNew.hidden = true;
   } catch {}
   document.querySelector('#dismiss-whats-new')?.addEventListener('click', () => {
     whatsNew.hidden = true;
-    try { localStorage.setItem('bioaventura-whats-new-karaoke', '1'); } catch {}
+    try { localStorage.setItem('bioaventura-whats-new-v2', '1'); } catch {}
   });
 }
 
@@ -586,11 +586,11 @@ loadLeaderboard();
   const whatsNew = document.querySelector('#whats-new');
 if (whatsNew) {
   try {
-    if (localStorage.getItem('bioaventura-whats-new-karaoke') === '1') whatsNew.hidden = true;
+    if (localStorage.getItem('bioaventura-whats-new-v2') === '1') whatsNew.hidden = true;
   } catch {}
   document.querySelector('#dismiss-whats-new')?.addEventListener('click', () => {
     whatsNew.hidden = true;
-    try { localStorage.setItem('bioaventura-whats-new-karaoke', '1'); } catch {}
+    try { localStorage.setItem('bioaventura-whats-new-v2', '1'); } catch {}
   });
 }
 
@@ -602,11 +602,11 @@ document.querySelector('#refresh-leaderboard').addEventListener('click', loadLea
 const whatsNew = document.querySelector('#whats-new');
 if (whatsNew) {
   try {
-    if (localStorage.getItem('bioaventura-whats-new-karaoke') === '1') whatsNew.hidden = true;
+    if (localStorage.getItem('bioaventura-whats-new-v2') === '1') whatsNew.hidden = true;
   } catch {}
   document.querySelector('#dismiss-whats-new')?.addEventListener('click', () => {
     whatsNew.hidden = true;
-    try { localStorage.setItem('bioaventura-whats-new-karaoke', '1'); } catch {}
+    try { localStorage.setItem('bioaventura-whats-new-v2', '1'); } catch {}
   });
 }
 
