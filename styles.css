@@ -94,3 +94,12 @@
 .music-play { min-height: 38px; padding: 8px 16px; }
 .music-progress-wrap { flex: 1; min-width: 200px; display: flex; align-items: center; gap: 10px; font: 700 .8rem/1 'DM Sans', sans-serif; color: var(--muted); }
 .music-progress-wrap input[type="range"] { flex: 1; accent-color: var(--dark); cursor: pointer; }
+
+/* Letra karaoke desplegable */
+.lyrics-dropdown { border-top: 1px solid var(--line); padding-top: 12px; }
+.lyrics-dropdown summary { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font: 800 .9rem/1 'Nunito', sans-serif; color: var(--dark); list-style: none; user-select: none; }
+.lyrics-dropdown summary::-webkit-details-marker { display: none; }
+.lyrics-dropdown summary svg { width: 17px; height: 17px; color: #e9745e; }
+.karaoke-box { position: relative; margin-top: 12px; max-height: 220px; overflow-y: auto; padding: 12px; border-radius: 12px; background: #f8fbf6; border: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px; }
+.karaoke-line { margin: 0; padding: 6px 12px; border-radius: 8px; font: 600 .92rem/1.4 'DM Sans', sans-serif; color: var(--ink); cursor: pointer; transition: background .15s; }
+.karaoke-line:hover { background: #edf4ec; }

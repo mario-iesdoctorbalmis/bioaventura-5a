@@ -553,14 +553,151 @@ loadLeaderboard();
 if (!state.playerName) playerDialog.showModal();
 
 const TRACKS = [
-  { title: 'Esqueleto Urbano', subtitle: 'Rap de los huesos', src: 'resources/Esqueleto_Urbano.mp3' },
-  { title: 'Ritmo Anatómico', subtitle: 'Rap de los músculos', src: 'resources/Ritmo_anatómico.mp3' }
+  {
+    title: 'Esqueleto Urbano',
+    subtitle: 'Rap de los huesos',
+    src: 'resources/Esqueleto_Urbano.mp3',
+    lyrics: [
+      { t: 0, text: '🎵 Ritmo inicial...' },
+      { t: 7.5, text: 'Empezamos arriba en el cráneo genial:' },
+      { t: 10.5, text: 'en la frente tienes el frontal,' },
+      { t: 13.5, text: 'a los lados el parietal,' },
+      { t: 16.0, text: 'y cerca de las sienes está el temporal.' },
+      { t: 19.0, text: 'En la cara, arriba, el maxilar,' },
+      { t: 21.5, text: 'para poder morder y masticar.' },
+      { t: 24.5, text: 'Bajamos al pecho con mucha atención:' },
+      { t: 27.0, text: 'en el centro delantero está el esternón.' },
+      { t: 30.0, text: 'De ahí sale al hombro la clavícula fina,' },
+      { t: 33.0, text: 'y detrás, en la espalda, el omoplato domina.' },
+      { t: 36.0, text: 'Las costillas rodean como una prisión' },
+      { t: 39.0, text: 'para proteger pulmones y corazón.' },
+      { t: 42.0, text: 'Y por detrás, en fila, bien puestas en línea,' },
+      { t: 44.5, text: 'las vértebras forman toda la columna.' },
+      { t: 48.0, text: '¡Ey! De la cabeza hasta los pies,' },
+      { t: 50.5, text: 'aprende los huesos de una vez.' },
+      { t: 53.5, text: 'Cada pieza tiene su lugar,' },
+      { t: 56.0, text: '¡vamos, que el esqueleto va a sonar!' },
+      { t: 59.0, text: '¡Ey! De la cabeza hasta los pies,' },
+      { t: 62.0, text: 'aprende los huesos de una vez.' },
+      { t: 65.0, text: 'Cada pieza tiene su lugar,' },
+      { t: 67.5, text: '¡vamos, que el esqueleto va a sonar!' },
+      { t: 71.0, text: 'Desde el hombro hasta el codo va el húmero fuerte,' },
+      { t: 74.0, text: 'y en el antebrazo tienes dos de suerte:' },
+      { t: 77.0, text: 'radio y cúbito juntos van,' },
+      { t: 82.5, text: 'hasta llegar a la muñeca, donde el carpo está.' },
+      { t: 85.5, text: 'En la palma de la mano el metacarpo ves,' },
+      { t: 88.5, text: 'y en los dedos las falanges… ¡como en los pies!' },
+      { t: 93.0, text: '🎵 Pausa instrumental...' },
+      { t: 122.0, text: 'En la cadera manda la pelvis entera,' },
+      { t: 125.0, text: 'y en el muslo el fémur, ¡el más largo que hubiera!' },
+      { t: 128.0, text: 'Delante de la rodilla, como un escudo,' },
+      { t: 131.0, text: 'está la rótula, ¡te lo aseguro!' },
+      { t: 134.0, text: 'Debajo de la rodilla, hasta el tobillo van,' },
+      { t: 136.5, text: 'tibia y peroné que te hacen caminar.' },
+      { t: 139.0, text: 'En el tobillo el tarso, en el pie el metatarso,' },
+      { t: 142.0, text: 'y en los dedos las falanges… ¡ya hemos terminado el paso!' },
+      { t: 145.5, text: '¡Ey! De la cabeza hasta los pies,' },
+      { t: 148.0, text: 'aprende los huesos de una vez.' },
+      { t: 151.0, text: 'Cada pieza tiene su lugar,' },
+      { t: 153.5, text: '¡vamos, que el esqueleto va a sonar!' },
+      { t: 156.5, text: '¡Ey! De la cabeza hasta los pies,' },
+      { t: 159.5, text: 'aprende los huesos de una vez.' },
+      { t: 162.0, text: 'Cada pieza tiene su lugar,' },
+      { t: 165.0, text: '¡vamos, que el esqueleto va a sonar!' },
+      { t: 171.5, text: 'Cráneo, tronco, brazos y pies, ¡ya te sabes los huesos al derecho y al revés!' }
+    ]
+  },
+  {
+    title: 'Ritmo Anatómico',
+    subtitle: 'Rap de los músculos',
+    src: 'resources/Ritmo_anatómico.mp3',
+    lyrics: [
+      { t: 0, text: 'Escucha el ritmo, siente el movimiento,' },
+      { t: 5.5, text: 'vamos a conocer nuestro cuerpo por dentro.' },
+      { t: 11.0, text: '¡Ey! Si te mueves, si corres o si saltas,' },
+      { t: 14.5, text: 'los músculos trabajan, nunca te hacen falta.' },
+      { t: 18.0, text: 'De la cara hasta los pies, escúchalo bien,' },
+      { t: 21.5, text: 'vamos a ubicarlos todos de una vez.' },
+      { t: 26.5, text: 'Empezamos por la cara, ¡mira qué nivel!:' },
+      { t: 28.5, text: 'orbicular de los párpados rodea el ojo bien,' },
+      { t: 31.5, text: 'orbicular de los labios rodea la boca entera,' },
+      { t: 34.5, text: 'y el masetero en la mandíbula mastica lo que quiera.' },
+      { t: 37.5, text: 'A los lados del cuello, con nombre bien largo,' },
+      { t: 40.5, text: 'el esternocleidomastoideo gira la cabeza a tu cargo.' },
+      { t: 45.5, text: 'En lo alto de la espalda y el cuello está el trapecio,' },
+      { t: 48.5, text: 'cubriendo cada hombro el deltoides hace su precio.' },
+      { t: 51.5, text: 'En el pecho adelante manda el pectoral,' },
+      { t: 54.5, text: 'y en la espalda ancha tienes el dorsal.' },
+      { t: 57.0, text: 'En la zona del vientre, firmes y geniales,' },
+      { t: 60.0, text: 'para doblar el tronco van los abdominales.' },
+      { t: 64.5, text: '¡Ey! Si te mueves, si corres o si saltas,' },
+      { t: 68.0, text: 'los músculos trabajan, nunca te hacen falta.' },
+      { t: 71.5, text: 'De la cara hasta los pies, escúchalo bien,' },
+      { t: 75.0, text: 'vamos a ubicarlos todos de una vez.' },
+      { t: 81.0, text: 'En el brazo, por delante, el bíceps se contrae,' },
+      { t: 85.0, text: 'doblando el codo cuando algo se trae.' },
+      { t: 89.0, text: 'Y por detrás del brazo, haciendo su papel,' },
+      { t: 93.5, text: 'el tríceps lo estira… ¡apréndetelo bien!' },
+      { t: 98.5, text: 'En las nalgas tenemos el glúteo potente,' },
+      { t: 102.0, text: 'y en el muslo, por delante, el cuádriceps valiente.' },
+      { t: 105.5, text: 'Detrás del muslo, atento, está el bíceps femoral,' },
+      { t: 109.0, text: '¡no lo confundas con el del brazo, que no es igual!' },
+      { t: 113.0, text: 'Bajando a la pierna, delante junto al hueso,' },
+      { t: 116.5, text: 'el tibial anterior hace su proceso.' },
+      { t: 120.0, text: 'Y atrás, en la pantorrilla, para saltar al cielo,' },
+      { t: 123.5, text: 'tienes bien fuerte el músculo gemelo.' },
+      { t: 129.0, text: '¡Cara, tronco, brazos y pies,' },
+      { t: 135.0, text: 'ya te sabes los músculos al derecho y al revés!' }
+    ]
+  }
 ];
 const audio = document.querySelector('#music-audio');
 const trackList = document.querySelector('#music-tracks');
 const toggleBtn = document.querySelector('#music-toggle');
 const seekInput = document.querySelector('#music-seek');
+const karaokeBox = document.querySelector('#karaoke-box');
+const lyricsDropdown = document.querySelector('#lyrics-dropdown');
 let currentTrack = 0;
+let karaokeRaf = null;
+let manualOffset = 0;
+let lastSetScroll = 0;
+
+function renderLyrics() {
+  if (!karaokeBox) return;
+  const lines = TRACKS[currentTrack].lyrics || [];
+  karaokeBox.innerHTML = lines.map((line, i) => `<p class="karaoke-line" data-lyric="${i}" data-time="${line.t}">${line.text}</p>`).join('');
+  karaokeBox.scrollTop = 0;
+  manualOffset = 0;
+  lastSetScroll = 0;
+}
+
+function getAutoScroll(time) {
+  const maxScroll = karaokeBox.scrollHeight - karaokeBox.clientHeight;
+  if (maxScroll <= 0 || !audio?.duration) return 0;
+  const start = 5;
+  const span = Math.max(1, audio.duration - start - 10);
+  const ratio = Math.min(1, Math.max(0, (time - start) / span));
+  return ratio * maxScroll;
+}
+
+function updateKaraoke(time) {
+  if (!karaokeBox || !audio?.duration || (lyricsDropdown && !lyricsDropdown.open)) return;
+  const maxScroll = karaokeBox.scrollHeight - karaokeBox.clientHeight;
+  if (maxScroll <= 0) return;
+  const autoTarget = getAutoScroll(time);
+  const next = Math.min(maxScroll, Math.max(0, autoTarget + manualOffset));
+  lastSetScroll = next;
+  karaokeBox.scrollTop = next;
+}
+
+function tickKaraoke() {
+  if (!audio || audio.paused) {
+    karaokeRaf = null;
+    return;
+  }
+  updateKaraoke(audio.currentTime);
+  karaokeRaf = requestAnimationFrame(tickKaraoke);
+}
 
 function formatTime(sec) {
   if (!Number.isFinite(sec)) return '0:00';
@@ -589,6 +726,7 @@ function selectTrack(index, autoplay = false) {
   document.querySelector('#music-time').textContent = '0:00';
   document.querySelector('#music-duration').textContent = '0:00';
   renderTracks();
+  renderLyrics();
   if (autoplay) audio.play().catch(() => {});
   updatePlayButton();
 }
@@ -620,11 +758,37 @@ if (audio && trackList) {
   audio.addEventListener('timeupdate', () => {
     document.querySelector('#music-time').textContent = formatTime(audio.currentTime);
     if (audio.duration) seekInput.value = Math.round((audio.currentTime / audio.duration) * 100);
+    updateKaraoke(audio.currentTime);
+  });
+  karaokeBox?.addEventListener('click', event => {
+    const line = event.target.closest('[data-lyric]');
+    if (!line) return;
+    audio.currentTime = Number(line.dataset.time) || 0;
+    audio.play().catch(() => {});
   });
   audio.addEventListener('ended', () => selectTrack(currentTrack + 1, true));
-  audio.addEventListener('play', updatePlayButton);
-  audio.addEventListener('pause', updatePlayButton);
+  audio.addEventListener('play', () => {
+    updatePlayButton();
+    if (!karaokeRaf) karaokeRaf = requestAnimationFrame(tickKaraoke);
+  });
+  audio.addEventListener('pause', () => {
+    updatePlayButton();
+    if (karaokeRaf) { cancelAnimationFrame(karaokeRaf); karaokeRaf = null; }
+  });
+  lyricsDropdown?.addEventListener('toggle', () => {
+    if (lyricsDropdown.open) updateKaraoke(audio.currentTime);
+  });
+  karaokeBox?.addEventListener('scroll', () => {
+    if (Math.abs(karaokeBox.scrollTop - lastSetScroll) > 2) {
+      manualOffset = karaokeBox.scrollTop - getAutoScroll(audio.currentTime);
+      lastSetScroll = karaokeBox.scrollTop;
+    }
+  });
   seekInput.addEventListener('input', () => {
-    if (audio.duration) audio.currentTime = (Number(seekInput.value) / 100) * audio.duration;
+    if (audio.duration) {
+      audio.currentTime = (Number(seekInput.value) / 100) * audio.duration;
+      manualOffset = 0;
+      updateKaraoke(audio.currentTime);
+    }
   });
 }
