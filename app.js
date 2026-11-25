@@ -239,7 +239,7 @@ document.querySelector('#confirm-reset').addEventListener('click', async () => {
     const regs = await navigator.serviceWorker.getRegistrations();
     await Promise.all(regs.map(r => r.unregister()));
   }
-  location.reload();
+  location.replace(location.pathname + '?v=' + Date.now());
 });
 
 renderTopics();

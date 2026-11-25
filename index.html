@@ -8,10 +8,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=20261125">
   <script src="lucide.min.js" defer></script>
-  <script src="data.js" defer></script>
-  <script src="app.js" defer></script>
+  <script src="data.js?v=20261125" defer></script>
+  <script src="app.js?v=20261125" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -26,8 +26,8 @@
       <div class="whats-new-copy">
         <span class="whats-new-icon"><i data-lucide="sparkles"></i></span>
         <div>
-          <strong>¿Qué hay de nuevo? <small class="whats-new-date">Última actualización: 25/11/2026 · 17:14</small></strong>
-          <p><strong>¡Nueva canción!</strong> Rap de gusto, oído y ojo, y descarga directa de cada tema</p>
+          <strong>¿Qué hay de nuevo? <small class="whats-new-date">Última actualización: 25/11/2026 · 22:00</small></strong>
+          <p><strong>¡Nueva canción!</strong> Rap de gusto, oído y ojo, y descarga directa de cada tema. <small>Si no ves las novedades, pulsa <kbd>Ctrl</kbd>+<kbd>F5</kbd> (<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> en Mac) o usa el botón <strong>Forzar actualización</strong> abajo (pie de página).</small></p>
         </div>
       </div>
       <button type="button" class="icon-button" id="dismiss-whats-new" aria-label="Cerrar aviso" title="Cerrar"><i data-lucide="x"></i></button>
@@ -80,7 +80,7 @@
       <div class="leaderboard-card" id="leaderboard-list"></div>
     </section>
 
-    <footer><span><span class="footer-mark">✳</span> Hecho para mentes curiosas.</span><button class="text-button" id="reset-progress"><i data-lucide="rotate-ccw"></i> Borrar cache</button></footer>
+    <footer><span><span class="footer-mark">✳</span> Hecho para mentes curiosas.</span><button class="text-button" id="reset-progress"><i data-lucide="rotate-ccw"></i> Forzar actualización</button></footer>
   </main>
 
   <dialog id="quiz-dialog" class="dialog quiz-dialog" aria-labelledby="quiz-title"><div id="quiz-content"></div></dialog>
