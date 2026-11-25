@@ -48,7 +48,7 @@ function doPost(e) {
   const aciertos = Number(body.aciertos) || 0;
   const partidas = Number(body.partidas) || 0;
   const progreso = String(body.progreso || '');
-  const fecha = new Date().toLocaleDateString('es-ES');
+  const fecha = new Date().toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' });
 
   const rows = sheet.getDataRange().getValues();
   for (let i = 1; i < rows.length; i++) {

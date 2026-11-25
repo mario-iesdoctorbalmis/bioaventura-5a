@@ -1,7 +1,7 @@
 const STORAGE_KEY = 'bioaventura-progress-v1';
 const LEADERBOARD_KEY = 'bioaventura-leaderboard-v1';
 // Pega aquí la URL de tu Google Apps Script publicada como Aplicación web:
-const SHEETS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbywzkiEmQpPj_jKsblRG3nzbr2bmht6Zn4avjSEIRQh0OEG5TuYp4J5XPW4TEJdap2XuQ/exec';
+const SHEETS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbziFlygijZ8kPQFUPWZjFQjRNNXiCmwZQvpB8nrlgEIQnlH-Fif-cM3XdSSeLv_4H1HIQ/exec';
 const ROUND_SIZE = 5;
 const BADGES = [
   { id: 'first', name: 'Primer paso', detail: 'Completa tu primera misión', icon: 'flag', earned: state => state.games >= 1 },
@@ -471,7 +471,7 @@ async function syncScoreToSheet() {
       topics: state.topics,
       badges: state.badges
     }),
-    fecha: new Date().toLocaleDateString('es-ES')
+    fecha: new Date().toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' })
   };
   saveLocalLeaderboard(entry);
   renderLeaderboard(getLocalLeaderboard());
