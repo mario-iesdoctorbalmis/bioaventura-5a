@@ -228,7 +228,19 @@ document.querySelector('[data-close-study]').addEventListener('click', () => stu
 document.querySelector('#study-play').addEventListener('click', () => { studyDialog.close(); startRound(studyTopic.id); });
 document.querySelector('#reset-progress').addEventListener('click', () => resetDialog.showModal());
 document.querySelectorAll('[data-cancel-reset]').forEach(button => button.addEventListener('click', () => resetDialog.close()));
-document.querySelector('#confirm-reset').addEventListener('click', () => { state = defaultState(); saveState(); renderDashboard(); resetDialog.close(); });
+document.querySelector('#confirm-reset').addEventListener('click', async () => {
+  localStorage.clear();
+  sessionStorage.clear();
+  if ('caches' in window) {
+    const keys = await caches.keys();
+    await Promise.all(keys.map(k => caches.delete(k)));
+  }
+  if ('serviceWorker' in navigator) {
+    const regs = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(regs.map(r => r.unregister()));
+  }
+  location.reload();
+});
 
 renderTopics();
 renderDashboard();
