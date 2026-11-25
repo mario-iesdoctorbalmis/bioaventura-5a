@@ -617,6 +617,7 @@ const TRACKS = [
   {
     title: 'Esqueleto Urbano',
     subtitle: 'Rap de los huesos',
+    icon: 'bone',
     src: 'resources/Esqueleto_Urbano.mp3',
     lyrics: [
       { t: 0, text: '🎵 Ritmo inicial...' },
@@ -671,6 +672,7 @@ const TRACKS = [
   {
     title: 'Ritmo Anatómico',
     subtitle: 'Rap de los músculos',
+    icon: 'biceps-flexed',
     src: 'resources/Ritmo_anatómico.mp3',
     lyrics: [
       { t: 0, text: 'Escucha el ritmo, siente el movimiento,' },
@@ -709,6 +711,78 @@ const TRACKS = [
       { t: 123.5, text: 'tienes bien fuerte el músculo gemelo.' },
       { t: 129.0, text: '¡Cara, tronco, brazos y pies,' },
       { t: 135.0, text: 'ya te sabes los músculos al derecho y al revés!' }
+    ]
+  },
+  {
+    title: 'Gusto, Oído y Ojo',
+    subtitle: 'Rap de los sentidos',
+    icon: 'eye',
+    src: 'resources/gusto-oído-ojo.mp3',
+    lyrics: [
+      { t: 0, text: 'Oye, prepárate para el viaje corporal,' },
+      { t: 4.5, text: 'gusto, oído y vista en este rap total.' },
+      { t: 7.5, text: 'La ciencia tiene flow, aprende de una vez,' },
+      { t: 10.5, text: 'anatomía con paz de la cabeza a los pies.' },
+      { t: 13.5, text: 'Empezamos por la boca, mira qué nivel:' },
+      { t: 16.5, text: 'el dulce es el azúcar de un rico pastel,' },
+      { t: 19.5, text: 'el salado en las patatas que te gusta probar,' },
+      { t: 22.5, text: 'y el ácido en el limón que te hace gesticular.' },
+      { t: 25.5, text: 'El amargo en el café que te va a despertar,' },
+      { t: 28.5, text: 'y el umami en el queso que te hace disfrutar.' },
+      { t: 31.5, text: 'Cinco sabores claros en tu lengua al comer,' },
+      { t: 34.5, text: 'son las papilas gustativas que te hacen saber.' },
+      { t: 37.5, text: 'Siente el ritmo en tu piel, es la anatomía,' },
+      { t: 40.5, text: 'tres sentidos potentes brillando de día.' },
+      { t: 43.5, text: 'Gusto, oído y vista, todo un gran motor,' },
+      { t: 46.5, text: 'aprende con este rap de puro color.' },
+      { t: 49.5, text: 'Siente el ritmo en tu piel, es la anatomía,' },
+      { t: 52.5, text: 'tres sentidos potentes brillando de día.' },
+      { t: 55.5, text: 'Gusto, oído y vista, todo un gran motor,' },
+      { t: 58.5, text: 'aprende con este rap de puro color.' },
+      { t: 62.0, text: 'Entramos en la oreja con este flow de autor:' },
+      { t: 65.0, text: 'el conducto auditivo es el gran receptor.' },
+      { t: 68.0, text: 'Choca en el tímpano, la membrana que va a vibrar,' },
+      { t: 71.0, text: 'y tres huesecillos la señal van a amplificar.' },
+      { t: 74.0, text: 'El martillo, el yunque y el estribo en unión' },
+      { t: 77.0, text: 'llevan al caracol toda esa gran vibración.' },
+      { t: 80.0, text: 'El nervio auditivo al cerebro se la va a mandar,' },
+      { t: 83.0, text: 'y así cada sonido tú lo puedes procesar.' },
+      { t: 86.0, text: 'Siente el ritmo en tu piel, es la anatomía,' },
+      { t: 89.0, text: 'tres sentidos potentes brillando de día.' },
+      { t: 92.0, text: 'Gusto, oído y vista, todo un gran motor,' },
+      { t: 95.0, text: 'aprende con este rap de puro color.' },
+      { t: 98.0, text: 'Siente el ritmo en tu piel, es la anatomía,' },
+      { t: 101.0, text: 'tres sentidos potentes brillando de día.' },
+      { t: 104.0, text: 'Gusto, oído y vista, todo un gran motor,' },
+      { t: 107.0, text: 'aprende con este rap de puro color.' },
+      { t: 111.5, text: 'Pasamos a la vista, el mundo en tu pantalla:' },
+      { t: 114.5, text: 'los párpados son el escudo, lo que nunca falla.' },
+      { t: 117.5, text: 'Limpian y protegen de todo lo exterior,' },
+      { t: 120.5, text: 'y el globo ocular recibe todo ese resplandor.' },
+      { t: 123.5, text: 'La esclerótica es la capa, el casco protector,' },
+      { t: 126.5, text: 'y el iris es el músculo que le da el color.' },
+      { t: 129.5, text: 'La pupila es la ventana que regula la luz,' },
+      { t: 132.5, text: 'y pestañas y cejas, ¡vaya gran multitud!' },
+      { t: 135.5, text: 'Las pestañas son filtros que evitan el polvo entrar,' },
+      { t: 138.5, text: 'y las cejas desvían el sudor al caminar.' },
+      { t: 141.5, text: 'Todo este gran sistema te permite observar,' },
+      { t: 144.5, text: 'y este mundo tan bello tú puedas admirar.' },
+      { t: 147.5, text: 'Siente el ritmo en tu piel, es la anatomía,' },
+      { t: 150.5, text: 'tres sentidos potentes brillando de día.' },
+      { t: 153.5, text: 'Gusto, oído y vista, todo un gran motor,' },
+      { t: 156.5, text: 'aprende con este rap de puro color.' },
+      { t: 159.5, text: 'Siente el ritmo en tu piel, es la anatomía,' },
+      { t: 162.5, text: 'tres sentidos potentes brillando de día.' },
+      { t: 165.5, text: 'Gusto, oído y vista, todo un gran motor,' },
+      { t: 168.5, text: 'aprende con este rap de puro color.' },
+      { t: 171.5, text: 'Siente el ritmo en tu piel, es la anatomía,' },
+      { t: 174.5, text: 'tres sentidos potentes brillando de día.' },
+      { t: 177.5, text: 'Gusto, oído y vista, todo un gran motor,' },
+      { t: 180.5, text: 'aprende con este rap de puro color.' },
+      { t: 183.5, text: 'Ya te sabes los tres sentidos con este flow genial,' },
+      { t: 187.0, text: 'gusto, oído y vista, un equipo sin igual.' },
+      { t: 190.0, text: 'La ciencia en tus auriculares, nunca lo olvides ya,' },
+      { t: 193.0, text: '¡paz y rap para todos, nos vemos allá!' }
     ]
   }
 ];
@@ -769,7 +843,7 @@ function formatTime(sec) {
 
 function renderTracks() {
   if (!trackList) return;
-  trackList.innerHTML = TRACKS.map((t, i) => `<button type="button" class="music-track ${i === currentTrack ? 'active' : ''}" data-track="${i}"><span class="music-track-icon"><i data-lucide="music"></i></span><span><strong>${t.title}</strong><small>${t.subtitle}</small></span></button>`).join('');
+  trackList.innerHTML = TRACKS.map((t, i) => `<div class="music-track-item"><button type="button" class="music-track ${i === currentTrack ? 'active' : ''}" data-track="${i}"><span class="music-track-icon"><i data-lucide="${t.icon || 'music'}"></i></span><span><strong>${t.title}</strong><small>${t.subtitle}</small></span></button><a class="icon-button music-download" href="${encodeURI(t.src)}" download aria-label="Descargar ${t.title}" title="Descargar ${t.title}"><i data-lucide="download"></i></a></div>`).join('');
   icons();
 }
 
